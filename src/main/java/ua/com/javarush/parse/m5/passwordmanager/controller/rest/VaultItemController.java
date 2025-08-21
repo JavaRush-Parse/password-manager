@@ -14,8 +14,8 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/test")
-public class TestRest {
+@RequestMapping("/api/v1/vault-item")
+public class VaultItemController {
 
   private final VaultItemRepository vaultItemRepository;
 
@@ -27,7 +27,7 @@ public class TestRest {
     return new ResponseEntity<VaultItem>(save, HttpStatus.CREATED);
   }
 
-  @GetMapping("/getall")
+  @GetMapping("/all")
   public ResponseEntity<List<VaultItem>> getAll() {
     return new ResponseEntity<>(vaultItemRepository.findAll(), HttpStatus.OK);
   }
