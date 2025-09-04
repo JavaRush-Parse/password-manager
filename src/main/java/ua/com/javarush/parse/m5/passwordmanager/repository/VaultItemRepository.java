@@ -9,5 +9,7 @@ public interface VaultItemRepository extends JpaRepository<VaultItem, Long> {
 
   List<VaultItem> findVaultItemByLogin(String login);
 
+  boolean findByResourceAndLogin(String resource, String login);
+
   List<VaultItem> findVaultItemByResource(String resource);
 }
