@@ -8,4 +8,6 @@ import java.util.List;
 public interface VaultItemRepository extends JpaRepository<VaultItem, Long> {
 
   List<VaultItem> findVaultItemByLogin(String login);
+
+  boolean findByResourceAndLogin(String resource, String login);
 }
