@@ -10,6 +10,7 @@ import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -24,6 +25,21 @@ public class VaultItemController {
   public ResponseEntity<VaultItem> save(@RequestBody VaultItem item) {
     VaultItem save = vaultItemService.save(item);
     return new ResponseEntity<>(save, HttpStatus.CREATED);
+  }
+
+  @PostMapping("/import")
+  public ResponseEntity<?> importVaultItems(@RequestBody List<VaultItem> items) {
+    try {
+      vaultItemService.importVaultItems(items);
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(
+              Map.of(
+                      "status", HttpStatus.BAD_REQUEST.value(),
+                      "message", e.getMessage()
+              )
+      );
+    }
   }
 
   @GetMapping("/{id}")

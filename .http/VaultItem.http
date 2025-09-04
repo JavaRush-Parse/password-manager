@@ -10,6 +10,28 @@ Content-Type: application/json
   "password": "testPassword"
 }
 
+
+###
+POST http://localhost:8080/api/v1/vault/import
+Content-Type: application/json
+
+[
+  {
+    "name": "Import 1",
+    "resource": "test-resource.com",
+    "description": "Test description",
+    "login": "test@gmail.com",
+    "password": "testPassword"
+  },
+  {
+    "name": "Import 2",
+    "resource": "test-resource.com",
+    "description": "Test description",
+    "login": "",
+    "password": "testPassword"
+  }
+]
+
 ###
 GET http://localhost:8080/api/v1/vault/all
 
