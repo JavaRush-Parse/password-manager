@@ -1,10 +1,10 @@
 # Password Manager
 
-<img alt="JavaRush University" src="https://img.shields.io/badge/java-rush-orange?style=for-the-badge&color=orange&cacheSeconds=3600">
-<img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen?style=for-the-badge">
-<img alt="Java" src="https://img.shields.io/badge/Java-21-orange?style=for-the-badge">
-<img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-17-blue?style=for-the-badge">
-<img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind%20CSS-4.0.17-38B2AC?style=for-the-badge">
+[<img alt="JavaRush University" src="https://img.shields.io/badge/java-rush-orange?style=for-the-badge&color=orange&cacheSeconds=3600">](https://javarush.com/)
+[<img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen?style=for-the-badge">](https://spring.io/projects/spring-boot)
+[<img alt="Java" src="https://img.shields.io/badge/Java-21-orange?style=for-the-badge">](https://openjdk.org/projects/jdk/21/)
+[<img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-17-blue?style=for-the-badge">](https://www.postgresql.org/)
+[<img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind%20CSS-4.0.17-38B2AC?style=for-the-badge">](https://tailwindcss.com/)
 
 A secure web-based password manager built with Spring Boot, featuring a modern UI with Tailwind CSS and PostgreSQL database integration.
 
@@ -33,6 +33,7 @@ A secure web-based password manager built with Spring Boot, featuring a modern U
 - **Tailwind CSS 4.0.17** - Utility-first CSS framework
 - **Thymeleaf Templates** - Server-side rendering
 - **Responsive Design** - Mobile-first approach
+- **HyperUI Components** - Modern UI components from [HyperUI](https://www.hyperui.dev/)
 
 ### Database
 - **PostgreSQL 17** - Primary production database
@@ -118,6 +119,8 @@ password-manager/
    ```bash
    docker-compose up -d postgres
    ```
+   **Note**: You don't necessarily need to start it manually. There is a dependency that does it automatically when you run the application.
+   
    This will start PostgreSQL on port 5432 with:
    - Database: `password-manager`
    - Username: `root`
