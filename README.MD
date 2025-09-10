@@ -42,6 +42,8 @@
    ```bash
    git clone https://github.com/JavaRush-Parse/password-manager.git
    cd password-manager
+
+## File Structure
 ```
 password-manager/
 ├── src/
