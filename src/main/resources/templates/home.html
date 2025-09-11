@@ -8,23 +8,24 @@
 </head>
 
 <body>
-<div th:replace="~{component/header}"></div>
+<div class="min-h-screen flex flex-col">
+    <div th:replace="~{component/header}"></div>
 
-<div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+    <main class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 flex-1 w-full pb-10">
+        <div class="mb-4" >
+            <div th:replace="~{component/vault-table :: vaultTable(${vaultItems}) }"></div>
+        </div>
 
+        <div class="flex justify-end mb-4">
+            <a th:href="@{/vault-item/create}"
+               class="inline-block rounded-md bg-stone-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700">
+                + Add New Item
+            </a>
+        </div>
+    </main>
 
-    <div class="mb-4" >
-        <div th:replace="~{component/vault-table :: vaultTable(${vaultItems}) }"></div>
-    </div>
-
-    <div class="flex justify-end mb-4">
-        <a th:href="@{/vault-item/create}"
-           class="inline-block rounded-md bg-stone-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700">
-            + Add New Item
-        </a>
-    </div>
+    <div th:replace="~{component/footer}"></div>
 </div>
-<div th:replace="~{component/footer}"></div>
 </body>
 
 </html>

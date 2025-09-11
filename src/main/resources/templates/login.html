@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Password Manager</title>
+    <link th:href="@{/main.css}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <meta th:if="${param.logout}" http-equiv="refresh" content="2;url='/'"/>
+    <meta th:if="${param.success}" http-equiv="refresh" content="2;url='/'"/>
+    <meta th:if="${param.error}" content=""/>
+    <style>
+        /* Minimal page-specific tweaks if needed */
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = document.getElementById('username');
+            if (username) username.focus();
+            const logo = document.getElementById('logoLink');
+            if (logo) {
+                logo.addEventListener('click', function(e) {
+                    // Force redirect to home from login page
+                    e.preventDefault();
+                    window.location.href = '/';
+                });
+            }
+        });
+    </script>
+</head>
+
+<body>
+<div class="min-h-screen flex flex-col">
+<div th:replace="~{component/header}"></div>
+
+<main class="mx-auto max-w-screen-sm px-4 sm:px-6 lg:px-8 flex-1 pb-16 w-full">
+    <section class="mt-10">
+        <div class="mx-auto max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <h1 class="mb-6 text-2xl font-semibold text-stone-950">Welcome back</h1>
+
+            <div th:if="${param.error}" class="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                Invalid username or password. Please try again.
+            </div>
+            <div th:if="${param.logout}" class="mb-4 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+                You have been logged out.
+            </div>
+
+            <form th:action="@{/login}" method="post" class="space-y-4">
+                <div>
+                    <label for="username" class="mb-1 block text-sm font-medium text-gray-700">Username</label>
+                    <input id="username" name="username" type="text" required autocomplete="username"
+                           class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+                </div>
+                <div>
+                    <label for="password" class="mb-1 block text-sm font-medium text-gray-700">Password</label>
+                    <input id="password" name="password" type="password" required autocomplete="current-password"
+                           class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+                </div>
+
+                <button type="submit"
+                        class="w-full rounded-md bg-stone-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">
+                    Sign in
+                </button>
+            </form>
+
+            <p class="mt-4 text-center text-sm text-gray-500">
+                Tip: demo user is <span class="font-medium text-stone-950">user</span> / <span class="font-medium text-stone-950">password</span>
+            </p>
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{component/footer}"></div>
+</div>
+</body>
+
+</html>
+
+
