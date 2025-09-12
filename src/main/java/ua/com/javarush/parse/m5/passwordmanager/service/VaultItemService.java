@@ -3,6 +3,7 @@ package ua.com.javarush.parse.m5.passwordmanager.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Sort;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.repository.VaultItemRepository;
 
@@ -37,7 +38,7 @@ public class VaultItemService {
 
 
     public List<VaultItem> findAll() {
-    return vaultItemRepository.findAll();
+    return vaultItemRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
   }
 
   public Optional<VaultItem> findById(Long id){

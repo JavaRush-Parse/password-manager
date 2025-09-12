@@ -2,6 +2,7 @@ package ua.com.javarush.parse.m5.passwordmanager.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Sort;
 import ua.com.javarush.parse.m5.passwordmanager.entity.Collection;
 import ua.com.javarush.parse.m5.passwordmanager.repository.CollectionRepository;
 
@@ -15,7 +16,7 @@ public class CollectionService {
     private final CollectionRepository collectionRepository;
 
     public List<Collection> findAll() {
-        return collectionRepository.findAll();
+        return collectionRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
 
     public Optional<Collection> findById(Long id) {
