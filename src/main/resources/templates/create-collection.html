@@ -35,7 +35,7 @@
                 <div>
                     <label class="mb-1.5 block text-sm font-medium text-gray-800">Color</label>
                     <div class="flex items-center gap-3">
-                        <input th:field="*{color}" type="color" value="#1f2937"
+                        <input th:field="*{colour}" type="text" value="#1f2937"
                                class="h-10 w-12 cursor-pointer rounded-md border border-gray-300 p-1 shadow-sm"/>
                         <span class="text-xs text-gray-500">Pick a color to identify this collection.</span>
                     </div>
@@ -51,11 +51,11 @@
 
                 <div class="flex items-center gap-3 pt-2">
                     <button type="submit"
-                            class="inline-flex items-center justify-center rounded-lg bg-stone-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700">
+                            class="btn-primary">
                         Create
                     </button>
                     <a th:href="@{/}"
-                       class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-800 transition hover:bg-gray-50">
+                       class="btn-secondary">
                         Cancel
                     </a>
                 </div>
