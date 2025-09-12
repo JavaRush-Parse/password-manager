@@ -1,9 +1,10 @@
 package ua.com.javarush.parse.m5.passwordmanager.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.exception.EmptyLoginException;
 import ua.com.javarush.parse.m5.passwordmanager.exception.EmptyResourceException;
@@ -38,7 +39,7 @@ public class VaultItemService {
                 });
     }
 
-  @org.springframework.transaction.annotation.Transactional(readOnly = true)
+  @Transactional(readOnly = true)
     public List<VaultItem> findAll() {
     return vaultItemRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
   }
