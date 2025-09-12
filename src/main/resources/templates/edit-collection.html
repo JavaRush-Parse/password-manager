@@ -12,10 +12,10 @@
 <div class="min-h-screen flex flex-col">
     <div th:replace="~{component/header}"></div>
 
-    <main class="main-content-area">
+    <main class="main-content-area-s">
         <h1 class="mt-8 mb-6 text-2xl font-semibold text-stone-950">Edit Collection</h1>
 
-        <div class="form-container">
+        <div class="container">
             <form th:action="@{'/collections/update/' + ${collection.id}}" method="post" th:object="${collection}" class="space-y-5">
                 <input th:field="*{id}" type="hidden"/>
                 <div>
