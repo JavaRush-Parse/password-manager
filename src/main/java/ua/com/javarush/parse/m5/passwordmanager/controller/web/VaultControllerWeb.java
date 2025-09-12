@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
+import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class VaultControllerWeb {
 
   private final VaultItemService vaultItemService;
+  private final CollectionService collectionService;
 
   @GetMapping("/{id}")
   public String get(@PathVariable Long id, Model model) {
@@ -29,6 +31,7 @@ public class VaultControllerWeb {
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("vault", new VaultItem());
+        model.addAttribute("collections", collectionService.findAll());
         return "create-vault";
     }
 
@@ -42,6 +45,7 @@ public class VaultControllerWeb {
         Optional<VaultItem> byId = vaultItemService.findById(id);
         if (byId.isPresent()) {
             model.addAttribute("vault", byId.get());
+            model.addAttribute("collections", collectionService.findAll());
             return "edit-vault";
         }
         return "redirect:/";
