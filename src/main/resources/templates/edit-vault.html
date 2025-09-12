@@ -1,54 +1,74 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Edit Vault Item</title>
     <link th:href="@{/main.css}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body class="bg-light p-5">
-<div th:replace="~{component/header}"></div>
 
-<div class="mx-auto max-w-xl">
-    <h1 class="text-2xl font-bold mb-5">Edit Vault Item</h1>
+<body>
+<div class="min-h-screen flex flex-col">
+    <div th:replace="~{component/header}"></div>
 
-    <form th:action="@{/vault-item/update/{id}(id=${vault.id})}" th:object="${vault}" method="post" class="space-y-4">
-        <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-            <input type="text" id="name" th:field="*{name}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
-        </div>
-        <div>
-            <label for="resource" class="block text-sm font-medium text-gray-700">Resource</label>
-            <input type="text" id="resource" th:field="*{resource}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
-        </div>
-        <div>
-            <label for="login" class="block text-sm font-medium text-gray-700">Login</label>
-            <input type="text" id="login" th:field="*{login}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
-        </div>
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" id="password" th:field="*{password}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
-        </div>
+    <main class="mx-auto max-w-screen-sm px-4 sm:px-6 lg:px-8 flex-1 w-full pb-10">
+        <h1 class="mt-8 mb-6 text-2xl font-semibold text-stone-950">Edit Vault Item</h1>
 
-        <div>
-            <label for="collection" class="block text-sm font-medium text-gray-700">Collection</label>
-            <select id="collection" th:field="*{collection}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                <option value="">Unassigned</option>
-                <option th:each="collection : ${collections}" th:value="${collection.id}" th:text="${collection.name}" th:selected="${vault.collection != null && collection.id == vault.collection.id}"></option>
-            </select>
+        <div class="mx-auto max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <form th:action="@{/vault-item/update/{id}(id=${vault.id})}" th:object="${vault}" method="post" class="space-y-5">
+                <input th:field="*{id}" type="hidden"/>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Name<span class="text-red-600">*</span></label>
+                    <input type="text" id="name" th:field="*{name}"
+                           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"/>
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Resource</label>
+                    <input type="text" id="resource" th:field="*{resource}"
+                           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"/>
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Login</label>
+                    <input type="text" id="login" th:field="*{login}"
+                           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"/>
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Password</label>
+                    <input type="password" id="password" th:field="*{password}"
+                           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"/>
+                </div>
+
+                <div>
+                    <label for="collection" class="mb-1.5 block text-sm font-medium text-gray-800">Collection</label>
+                    <select id="collection" th:field="*{collection}" class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30">
+                        <option value="">Unassigned</option>
+                        <option th:each="collection : ${collections}" th:value="${collection.id}" th:text="${collection.name}" th:selected="${vault.collection != null && collection.id == vault.collection.id}"></option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Description</label>
+                    <textarea id="description" th:field="*{description}" rows="3"
+                              class="w-full resize-y rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"></textarea>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="submit"
+                            class="inline-flex items-center justify-center rounded-lg bg-stone-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700">
+                        Update Item
+                    </button>
+                    <a th:href="@{/}"
+                       class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-800 transition hover:bg-gray-50">
+                        Cancel
+                    </a>
+                </div>
+            </form>
         </div>
-        <div>
-            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-            <textarea id="description" th:field="*{description}" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-        </div>
-        <div class="flex justify-end">
-            <button type="submit"
-                    class="rounded-md bg-stone-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700">
-                Update Item
-            </button>
-        </div>
-    </form>
+    </main>
+
+    <div th:replace="~{component/footer}"></div>
 </div>
-
-<div th:replace="~{component/footer}"></div>
 </body>
+
 </html>
