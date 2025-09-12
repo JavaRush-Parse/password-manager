@@ -12,45 +12,45 @@
 <div class="min-h-screen flex flex-col">
     <div th:replace="~{component/header}"></div>
 
-    <main class="mx-auto max-w-screen-sm px-4 sm:px-6 lg:px-8 flex-1 w-full pb-10">
+    <main class="main-content-area">
         <h1 class="mt-8 mb-6 text-2xl font-semibold text-stone-950">Edit Vault Item</h1>
 
-        <div class="mx-auto max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div class="form-container">
             <form th:action="@{/vault-item/update/{id}(id=${vault.id})}" th:object="${vault}" method="post" class="space-y-5">
                 <input th:field="*{id}" type="hidden"/>
                 <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Name<span class="text-red-600">*</span></label>
+                    <label class="form-label">Name<span class="text-red-600">*</span></label>
                     <input type="text" id="name" th:field="*{name}"
-                           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"/>
+                           class="form-input"/>
                 </div>
                 <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Resource</label>
+                    <label class="form-label">Resource</label>
                     <input type="text" id="resource" th:field="*{resource}"
-                           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"/>
+                           class="form-input"/>
                 </div>
                 <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Login</label>
+                    <label class="form-label">Login</label>
                     <input type="text" id="login" th:field="*{login}"
-                           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"/>
+                           class="form-input"/>
                 </div>
                 <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Password</label>
+                    <label class="form-label">Password</label>
                     <input type="password" id="password" th:field="*{password}"
-                           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"/>
+                           class="form-input"/>
                 </div>
 
                 <div>
-                    <label for="collection" class="mb-1.5 block text-sm font-medium text-gray-800">Collection</label>
-                    <select id="collection" th:field="*{collection}" class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30">
+                    <label for="collection" class="form-label">Collection</label>
+                    <select id="collection" th:field="*{collection}" class="form-input">
                         <option value="">Unassigned</option>
                         <option th:each="collection : ${collections}" th:value="${collection.id}" th:text="${collection.name}" th:selected="${vault.collection != null && collection.id == vault.collection.id}"></option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Description</label>
+                    <label class="form-label">Description</label>
                     <textarea id="description" th:field="*{description}" rows="3"
-                              class="w-full resize-y rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"></textarea>
+                              class="form-input"></textarea>
                 </div>
 
                 <div class="flex items-center gap-3 pt-2">

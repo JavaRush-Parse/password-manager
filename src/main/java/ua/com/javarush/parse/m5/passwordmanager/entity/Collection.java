@@ -33,7 +33,7 @@ public class Collection {
 
     @Size(max = 7, message = "Colour must be a valid hex code (e.g., #RRGGBB).")
     @Column(length = 7)
-    private String colour;
+    private String color;
 
     private String icon;
 

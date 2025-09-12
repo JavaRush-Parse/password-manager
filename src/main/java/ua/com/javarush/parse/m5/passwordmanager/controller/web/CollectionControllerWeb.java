@@ -30,7 +30,7 @@ public class CollectionControllerWeb {
         Collection collection = new Collection();
         collection.setName(form.getName());
         collection.setDescription(form.getDescription());
-        collection.setColour(form.getColor());
+        collection.setColor(form.getColor());
         collection.setIcon(form.getIcon());
         collectionService.save(collection);
         return "redirect:/";
@@ -44,7 +44,7 @@ public class CollectionControllerWeb {
             form.setId(existing.get().getId());
             form.setName(existing.get().getName());
             form.setDescription(existing.get().getDescription());
-            form.setColor(existing.get().getColour());
+            form.setColor(existing.get().getColor());
             form.setIcon(existing.get().getIcon());
             model.addAttribute("collection", form);
             return "edit-collection";
@@ -57,7 +57,7 @@ public class CollectionControllerWeb {
         Collection collection = new Collection();
         collection.setName(form.getName());
         collection.setDescription(form.getDescription());
-        collection.setColour(form.getColor());
+        collection.setColor(form.getColor());
         collection.setIcon(form.getIcon());
         collectionService.update(id, collection);
         return "redirect:/collections";

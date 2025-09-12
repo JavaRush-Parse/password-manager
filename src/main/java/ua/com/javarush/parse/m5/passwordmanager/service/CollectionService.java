@@ -42,7 +42,7 @@ public class CollectionService {
         return collectionRepository.findById(id)
                 .map(existingCollection -> {
                     existingCollection.setName(updatedCollectionData.getName());
-                    existingCollection.setColour(updatedCollectionData.getColour());
+                    existingCollection.setColor(updatedCollectionData.getColor());
                     existingCollection.setIcon(updatedCollectionData.getIcon());
                     existingCollection.setDescription(updatedCollectionData.getDescription());
                     return collectionRepository.save(existingCollection);

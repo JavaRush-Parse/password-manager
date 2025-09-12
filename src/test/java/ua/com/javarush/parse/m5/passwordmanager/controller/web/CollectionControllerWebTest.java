@@ -67,14 +67,14 @@ class CollectionControllerWebTest {
         existingCollection.setId(1L);
         existingCollection.setName("Existing Collection");
         existingCollection.setDescription("Existing Description");
-        existingCollection.setColour("#000000");
+        existingCollection.setColor("#000000");
         existingCollection.setIcon("existing-icon");
 
         CollectionControllerWeb.CollectionForm form = new CollectionControllerWeb.CollectionForm();
         form.setId(existingCollection.getId());
         form.setName(existingCollection.getName());
         form.setDescription(existingCollection.getDescription());
-        form.setColor(existingCollection.getColour());
+        form.setColor(existingCollection.getColor());
         form.setIcon(existingCollection.getIcon());
 
         when(collectionService.findById(anyLong())).thenReturn(Optional.of(existingCollection));
