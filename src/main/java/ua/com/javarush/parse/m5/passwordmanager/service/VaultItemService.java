@@ -27,6 +27,7 @@ public class VaultItemService {
                     existingItem.setResource(updatedItemData.getResource());
                     existingItem.setLogin(updatedItemData.getLogin());
                     existingItem.setDescription(updatedItemData.getDescription());
+                    existingItem.setCollection(updatedItemData.getCollection());
                     if (updatedItemData.getPassword() != null && !updatedItemData.getPassword().isEmpty()) {
                         existingItem.setPassword(updatedItemData.getPassword());
                     }

@@ -38,6 +38,14 @@
         </div>
 
         <div>
+            <label for="collection" class="block text-sm font-medium text-gray-700">Collection</label>
+            <select id="collection" th:field="*{collection}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <option value="">Unassigned</option>
+                <option th:each="collection : ${collections}" th:value="${collection.id}" th:text="${collection.name}"></option>
+            </select>
+        </div>
+
+        <div>
             <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
             <textarea id="description" th:field="*{description}" rows="3"
                       placeholder="Description..."
