@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
+import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
 import java.util.Optional;
@@ -27,6 +28,11 @@ class VaultControllerWebTest {
         @Bean
         public VaultItemService vaultItemService() {
             return mock(VaultItemService.class);
+        }
+
+        @Bean
+        public CollectionService collectionService() {
+            return mock(CollectionService.class);
         }
     }
 

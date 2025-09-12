@@ -11,6 +11,8 @@ import ua.com.javarush.parse.m5.passwordmanager.repository.VaultItemRepository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Sort;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -60,12 +62,12 @@ class VaultItemServiceTest {
 
     @Test
     void whenFindAll_thenRepositoryFindAllIsCalled() {
-        when(repository.findAll()).thenReturn(List.of(new VaultItem(), new VaultItem()));
+        when(repository.findAll(any(Sort.class))).thenReturn(List.of(new VaultItem(), new VaultItem()));
 
         List<VaultItem> result = service.findAll();
 
         assertThat(result).hasSize(2);
-        verify(repository).findAll();
+        verify(repository).findAll(any(Sort.class));
     }
 
     @Test
