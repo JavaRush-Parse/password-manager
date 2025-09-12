@@ -54,11 +54,11 @@ public class VaultItemService {
       if (vaultItem.getLogin().isEmpty() || vaultItem.getLogin().isBlank()) {
         throw new EmptyLoginException();
       } else if (vaultItem.getResource().isEmpty() || vaultItem.getResource().isBlank()) {
-        throw new EmptyLoginException();
+        throw new EmptyResourceException();
       } else if (seen.contains(vaultItem)) {
-        throw new ImportEntryDuplicateException();
+        throw new ImportEntryDuplicateException("Duplicate entry in import list: " + vaultItem.getName() + " - " + vaultItem.getResource() + " - " + vaultItem.getLogin());
       } else if (vaultItemRepository.findByResourceAndLogin(vaultItem.getResource(), vaultItem.getLogin())) {
-        throw new ImportEntryDuplicateException("Login already exists");
+        throw new ImportEntryDuplicateException("Entry already exists in database: " + vaultItem.getName() + " - " + vaultItem.getResource() + " - " + vaultItem.getLogin());
       }
 
       seen.add(vaultItem);
