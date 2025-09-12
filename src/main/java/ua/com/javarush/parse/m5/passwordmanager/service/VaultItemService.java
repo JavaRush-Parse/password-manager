@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
-import ua.com.javarush.parse.m5.passwordmanager.exception.EmptyLoginException;
-import ua.com.javarush.parse.m5.passwordmanager.exception.EmptyResourceException;
-import ua.com.javarush.parse.m5.passwordmanager.exception.ImportEntryDuplicateException;
+import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItemIdentifier;
+import ua.com.javarush.parse.m5.passwordmanager.exception.VaultItemImportException;
 import ua.com.javarush.parse.m5.passwordmanager.repository.VaultItemRepository;
 
 import java.util.*;
@@ -45,23 +44,33 @@ public class VaultItemService {
   }
 
   @org.springframework.transaction.annotation.Transactional(
-          rollbackFor = {EmptyLoginException.class, EmptyResourceException.class, ImportEntryDuplicateException.class,},
+          rollbackFor = {VaultItemImportException.class},
           isolation = Isolation.READ_COMMITTED)
   public List<VaultItem> importVaultItems(List<VaultItem> vaultItems) {
-    Set<VaultItem> seen = new HashSet<>();
+    List<String> errors = new ArrayList<>();
+    Set<VaultItemIdentifier> seen = new HashSet<>();
 
     for (VaultItem vaultItem : vaultItems) {
-      if (vaultItem.getLogin().isEmpty() || vaultItem.getLogin().isBlank()) {
-        throw new EmptyLoginException();
-      } else if (vaultItem.getResource().isEmpty() || vaultItem.getResource().isBlank()) {
-        throw new EmptyResourceException();
-      } else if (seen.contains(vaultItem)) {
-        throw new ImportEntryDuplicateException("Duplicate entry in import list: " + vaultItem.getName() + " - " + vaultItem.getResource() + " - " + vaultItem.getLogin());
-      } else if (vaultItemRepository.findByResourceAndLogin(vaultItem.getResource(), vaultItem.getLogin())) {
-        throw new ImportEntryDuplicateException("Entry already exists in database: " + vaultItem.getName() + " - " + vaultItem.getResource() + " - " + vaultItem.getLogin());
-      }
+      VaultItemIdentifier identifier = new VaultItemIdentifier(vaultItem.getResource(), vaultItem.getLogin());
 
-      seen.add(vaultItem);
+      if (vaultItem.getLogin() == null || vaultItem.getLogin().isBlank()) {
+        errors.add("Vault item with name '" + vaultItem.getName() + "' has an empty login.");
+      }
+      if (vaultItem.getResource() == null || vaultItem.getResource().isBlank()) {
+        errors.add("Vault item with name '" + vaultItem.getName() + "' has an empty resource.");
+      }
+      if (seen.contains(identifier)) {
+        errors.add("Duplicate entry in import list: " + vaultItem.getName() + " - " + vaultItem.getResource() + " - " + vaultItem.getLogin());
+      } else {
+        seen.add(identifier);
+      }
+      if (vaultItemRepository.findByResourceAndLogin(vaultItem.getResource(), vaultItem.getLogin())) {
+        errors.add("Entry already exists in database: " + vaultItem.getName() + " - " + vaultItem.getResource() + " - " + vaultItem.getLogin());
+      }
+    }
+
+    if (!errors.isEmpty()) {
+      throw new VaultItemImportException(errors);
     }
 
     return vaultItemRepository.saveAll(vaultItems);
