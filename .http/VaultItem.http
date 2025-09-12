@@ -1,38 +1,65 @@
 ###
-POST http://localhost:8080/api/v1/vault/create
+# Vault Items API
+###
+
+### Create a new vault item
+# @name createVaultItem
+POST {{host}}/{{api.path}}/{{api.version}}/vault/create
 Content-Type: application/json
 
 {
-  "name": "Test password",
-  "resource": "test-resource.com",
-  "description": "Test description",
-  "login": "test@gmail.com",
-  "password": "testPassword"
+  "name": "Gmail Account",
+  "resource": "https://mail.google.com",
+  "description": "Personal Gmail account.",
+  "login": "my.email@gmail.com",
+  "password": "MySecretPassword123!"
 }
 
-###
-GET http://localhost:8080/api/v1/vault/all
+### Create a new vault item and assign it to a collection
+# @name createVaultItemInCollection
+POST {{host}}/{{api.path}}/{{api.version}}/vault/create
+Content-Type: application/json
 
-###
-GET http://localhost:8080/api/v1/vault/1
+{
+  "name": "Facebook Account",
+  "resource": "https://www.facebook.com",
+  "description": "Personal Facebook account.",
+  "login": "my.email@gmail.com",
+  "password": "AnotherSecretPassword456!",
+  "collection": {
+    "id": 1
+  }
+}
 
-###
-DELETE http://localhost:8080/api/v1/vault/1
+### Get all vault items
+# @name getAllVaultItems
+GET {{host}}/{{api.path}}/{{api.version}}/vault/all
+
+### Get vault item by ID
+# @name getVaultItemById
+GET {{host}}/{{api.path}}/{{api.version}}/vault/1
 
 ### Find by login
-GET http://localhost:8080/api/v1/vault
+# @name findVaultItemByLogin
+GET {{host}}/{{api.path}}/{{api.version}}/vault?login=my.email@gmail.com
 
 ### Find by resource
-GET http://localhost:8080/api/v1/vault/resource?resource=test-resource.com
+# @name findVaultItemByResource
+GET {{host}}/{{api.path}}/{{api.version}}/vault/resource?resource=https://mail.google.com
 
-### Update
-PUT http://localhost:8080/api/v1/vault/1
+### Update a vault item
+# @name updateVaultItem
+PUT {{host}}/{{api.path}}/{{api.version}}/vault/1
 Content-Type: application/json
 
 {
-  "name": "Test password Updated REST",
-  "resource": "test123",
-  "description": "Test description 123",
-  "login": "test123@gmail.com",
-  "password": "TEST"
+  "name": "Google Account",
+  "resource": "https://accounts.google.com",
+  "description": "Personal Google account.",
+  "login": "my.email@gmail.com",
+  "password": "MyNewSecretPassword789!"
 }
+
+### Delete a vault item
+# @name deleteVaultItem
+DELETE {{host}}/{{api.path}}/{{api.version}}/vault/1

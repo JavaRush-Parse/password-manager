@@ -1,0 +1,39 @@
+###
+# Collections API
+###
+
+### Create a new collection
+# @name createCollection
+POST {{host}}/{{api.path}}/{{api.version}}/collections/create
+Content-Type: application/json
+
+{
+  "name": "Social Media",
+  "description": "Passwords for social media accounts.",
+  "colour": "#0b03fc",
+  "icon": "work.png"
+}
+
+### Get all collections
+# @name getAllCollections
+GET {{host}}/{{api.path}}/{{api.version}}/collections/all
+
+### Get collection by ID
+# @name getCollectionById
+GET {{host}}/{{api.path}}/{{api.version}}/collections/1
+
+### Update a collection
+# @name updateCollection
+PUT {{host}}/{{api.path}}/{{api.version}}/collections/1
+Content-Type: application/json
+
+{
+  "name": "Social Networks",
+  "description": "Passwords for social media accounts and messengers.",
+  "colour": "#0b03fc",
+  "icon": "work.png"
+}
+
+### Delete a collection
+# @name deleteCollection
+DELETE {{host}}/{{api.path}}/{{api.version}}/collections/1

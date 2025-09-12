@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Collection</title>
+    <link th:href="@{/main.css}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+<div class="min-h-screen flex flex-col">
+    <div th:replace="~{component/header}"></div>
+
+    <main class="mx-auto max-w-screen-sm px-4 sm:px-6 lg:px-8 flex-1 w-full pb-10">
+        <h1 class="mt-8 mb-6 text-2xl font-semibold text-stone-950">Edit Collection</h1>
+
+        <div class="mx-auto max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <form th:action="@{'/collections/update/' + ${collection.id}}" method="post" th:object="${collection}" class="space-y-5">
+                <input th:field="*{id}" type="hidden"/>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Name<span class="text-red-600">*</span></label>
+                    <input th:field="*{name}" type="text" required
+                           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"/>
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Description</label>
+                    <textarea th:field="*{description}" rows="4"
+                              class="w-full resize-y rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"></textarea>
+                </div>
+                <div>
+                    <label class="mb-1.5 block text-sm font-medium text-gray-800">Color</label>
+                    <div class="flex items-center gap-3">
+                        <input th:field="*{color}" type="color"
+                               class="h-10 w-12 cursor-pointer rounded-md border border-gray-300 p-1 shadow-sm"/>
+                        <span class="text-xs text-gray-500">Update the color for this collection.</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="icon" class="mb-1.5 block text-sm font-medium text-gray-800">Icon</label>
+                    <input id="icon" th:field="*{icon}" type="text"
+                           placeholder="e.g. fa-folder, fa-lock"
+                           class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-900 placeholder-gray-400 shadow-sm outline-none transition focus:border-stone-950 focus:ring-2 focus:ring-stone-950/30"/>
+                    <p class="mt-1 text-xs text-gray-500">Enter a class name for an icon (e.g., from Font Awesome).</p>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="submit"
+                            class="inline-flex items-center justify-center rounded-lg bg-stone-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-700">
+                        Update
+                    </button>
+                    <a th:href="@{/}"
+                       class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-800 transition hover:bg-gray-50">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div th:replace="~{component/footer}"></div>
+</div>
+</body>
+
+</html>
+
+

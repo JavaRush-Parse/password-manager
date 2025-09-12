@@ -37,4 +37,15 @@ public class CollectionService {
     public Optional<Collection> findByName(String name) {
         return collectionRepository.findByNameIgnoreCase(name);
     }
+
+    public Optional<Collection> update(Long id, Collection updatedCollectionData) {
+        return collectionRepository.findById(id)
+                .map(existingCollection -> {
+                    existingCollection.setName(updatedCollectionData.getName());
+                    existingCollection.setColour(updatedCollectionData.getColour());
+                    existingCollection.setIcon(updatedCollectionData.getIcon());
+                    existingCollection.setDescription(updatedCollectionData.getDescription());
+                    return collectionRepository.save(existingCollection);
+                });
+    }
 }
