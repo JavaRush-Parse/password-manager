@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxTrigger;
 
 import java.util.Optional;
 
@@ -37,6 +39,7 @@ public class VaultControllerWeb {
         return "create-vault";
     }
 
+    @HxRequest
     @GetMapping("/create-modal")
     public String showCreateFormModal(Model model) {
         model.addAttribute("vault", new VaultItem());
@@ -44,12 +47,13 @@ public class VaultControllerWeb {
         return "component/create-vault-modal :: modal";
     }
 
+    @HxRequest
+    @HxTrigger("closeModal, refreshVaultTable")
     @PostMapping("/save")
     @ResponseBody
     public String saveNewItem(@ModelAttribute("vault") VaultItem item, HttpServletResponse response) {
         try {
             vaultItemService.save(item);
-            response.setHeader("HX-Trigger", "closeModal, refreshVaultTable");
             return "";
         } catch (Exception e) {
             log.error("Error saving vault item", e);

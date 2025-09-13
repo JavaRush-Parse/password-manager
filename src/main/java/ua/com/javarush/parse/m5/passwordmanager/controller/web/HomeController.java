@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class HomeController {
     return "home";
   }
 
+  @HxRequest
   @GetMapping("/vault-table")
     public String vaultTable(Model model) {
         List<VaultItem> vaultItems = vaultItemService.findAll();
