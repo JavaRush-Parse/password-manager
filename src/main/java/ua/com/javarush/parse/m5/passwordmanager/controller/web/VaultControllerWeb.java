@@ -48,7 +48,7 @@ public class VaultControllerWeb {
     }
 
     @HxRequest
-    @HxTrigger("closeModal, refreshVaultTable")
+    @HxTrigger("refreshVaultTable")
     @PostMapping("/save")
     @ResponseBody
     public String saveNewItem(@ModelAttribute("vault") VaultItem item, HttpServletResponse response) {
