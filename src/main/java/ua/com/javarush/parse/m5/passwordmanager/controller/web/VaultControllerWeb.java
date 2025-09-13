@@ -2,6 +2,7 @@ package ua.com.javarush.parse.m5.passwordmanager.controller.web;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,20 +15,20 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/vault-item")
 @RequiredArgsConstructor
+@Slf4j
 public class VaultControllerWeb {
 
-  private final VaultItemService vaultItemService;
-  private final CollectionService collectionService;
+    private final VaultItemService vaultItemService;
+    private final CollectionService collectionService;
 
-  @GetMapping("/{id}")
-  public String get(@PathVariable Long id, Model model) {
-    Optional<VaultItem> byId = vaultItemService.findById(id);
-    byId.ifPresent(vaultItem -> {
-      model.addAttribute("vault", vaultItem);
-    });
-    return "vault";
-
-  }
+    @GetMapping("/{id}")
+    public String get(@PathVariable Long id, Model model) {
+        Optional<VaultItem> byId = vaultItemService.findById(id);
+        byId.ifPresent(vaultItem -> {
+            model.addAttribute("vault", vaultItem);
+        });
+        return "vault";
+    }
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
@@ -46,10 +47,17 @@ public class VaultControllerWeb {
     @PostMapping("/save")
     @ResponseBody
     public String saveNewItem(@ModelAttribute("vault") VaultItem item, HttpServletResponse response) {
-        vaultItemService.save(item);
-        response.setHeader("HX-Trigger", "closeModal, refreshVaultTable");
-        return "";
+        try {
+            vaultItemService.save(item);
+            response.setHeader("HX-Trigger", "closeModal, refreshVaultTable");
+            return "";
+        } catch (Exception e) {
+            log.error("Error saving vault item", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return "Error saving item: " + e.getMessage();
+        }
     }
+
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Optional<VaultItem> byId = vaultItemService.findById(id);
