@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="modal" id="modal-backdrop" class="fixed inset-0 bg-gray-200 bg-opacity-75 backdrop-blur-md flex items-center justify-center z-50"
+<div th:fragment="modal" id="modal-backdrop" class="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50"
      onclick="if (event.target.id === 'modal-backdrop') { this.remove() }">
     <div id="modal-content" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
