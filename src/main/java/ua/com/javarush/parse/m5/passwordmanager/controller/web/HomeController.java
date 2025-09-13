@@ -25,4 +25,11 @@ public class HomeController {
 
     return "home";
   }
+
+  @GetMapping("/vault-table")
+    public String vaultTable(Model model) {
+        List<VaultItem> vaultItems = vaultItemService.findAll();
+        model.addAttribute("vaultItems", vaultItems);
+        return "component/vault-table :: vaultTable";
+    }
 }

@@ -1,5 +1,6 @@
 package ua.com.javarush.parse.m5.passwordmanager.controller.web;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,10 +36,19 @@ public class VaultControllerWeb {
         return "create-vault";
     }
 
+    @GetMapping("/create-modal")
+    public String showCreateFormModal(Model model) {
+        model.addAttribute("vault", new VaultItem());
+        model.addAttribute("collections", collectionService.findAll());
+        return "component/create-vault-modal :: modal";
+    }
+
     @PostMapping("/save")
-    public String saveNewItem(@ModelAttribute("vault") VaultItem item) {
+    @ResponseBody
+    public String saveNewItem(@ModelAttribute("vault") VaultItem item, HttpServletResponse response) {
         vaultItemService.save(item);
-        return "redirect:/";
+        response.setHeader("HX-Trigger", "closeModal, refreshVaultTable");
+        return "";
     }
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
