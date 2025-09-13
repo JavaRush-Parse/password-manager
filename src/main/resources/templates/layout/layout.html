@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Password Manager</title>
+    <link rel="stylesheet" th:href="@{/main.css}">
+    <script th:src="@{/webjars/htmx.org/2.0.7/dist/htmx.min.js}" defer></script>
+</head>
+<body>
+<div class="min-h-screen flex flex-col">
+    <div th:replace="~{component/header :: header}"></div>
+
+    <main class="main-content-area-s" layout:fragment="content">
+        
+    </main>
+
+    <div th:replace="~{component/footer :: footer}"></div>
+</div>
+</body>
+</html>

@@ -1,16 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Password Manager</title>
-    <link th:href="@{/main.css}" rel="stylesheet">
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
 
 <body>
-<div th:replace="~{component/header}"></div>
-
-<div class="main-content-area">
+<div class="main-content-area" layout:fragment="content">
 
     <div class="mb-4">
         <div th:replace="~{component/vault-table :: vaultTable(${vaultItems}) }"></div>
@@ -27,7 +19,6 @@
         </a>
     </div>
 </div>
-<div th:replace="~{component/footer}"></div>
 </body>
 
 </html>
