@@ -70,7 +70,7 @@ public class VaultControllerWeb {
             model.addAttribute("collections", collectionService.findAll());
             return "edit-vault";
         }
-        return "redirect:/";
+    return "redirect:/";
     }
 
     @PostMapping("/update/{id}")
