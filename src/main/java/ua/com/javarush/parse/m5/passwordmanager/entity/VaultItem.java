@@ -1,5 +1,6 @@
 package ua.com.javarush.parse.m5.passwordmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class VaultItem {
   private String login;
 
   private String password;
-
+  @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "collection_id")
   private Collection collection;

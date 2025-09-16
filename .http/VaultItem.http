@@ -17,7 +17,7 @@ Content-Type: application/json
 
 ### Create a new vault item and assign it to a collection
 # @name createVaultItemInCollection
-POST {{host}}/{{api.path}}/{{api.version}}/vault/create
+POST http://localhost:8080/api/v1/vault/create
 Content-Type: application/json
 
 {
