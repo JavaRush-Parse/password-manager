@@ -4,6 +4,7 @@ about: New feature request
 title: "[CR]"
 labels: change
 assignees: ''
+type: Task
 
 ---
 
@@ -14,3 +15,10 @@ assignees: ''
 
 
 ## Additional context
+
+## Dependencies
+
+-
+
+## Acceptance criteria
+1.
