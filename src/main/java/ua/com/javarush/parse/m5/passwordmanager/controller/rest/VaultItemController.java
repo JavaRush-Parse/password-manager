@@ -65,8 +65,8 @@ public class VaultItemController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<?> findByLogin(@RequestParam String login) {
+    @GetMapping("/login/{login}")
+    public ResponseEntity<?> findByLogin(@PathVariable String login) {
         List<VaultItem> byLogin = vaultItemService.findByLogin(login);
 
         if (byLogin.isEmpty()) {
@@ -85,6 +85,16 @@ public class VaultItemController {
                     .body(ErrorResponse.of("Vault items for resource '" + resource + "' not found"));
         }
         return ResponseEntity.ok(byResource);
+    }
+
+    @GetMapping("/collection/{collectionName}")
+    public ResponseEntity<?> findByCollectionName(@PathVariable String collectionName) {
+        List<VaultItem> byId = vaultItemService.findByCollectionName(collectionName);
+        if (byId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ErrorResponse.of("Vault items for collection '" + collectionName + "' not found"));
+        }
+        return ResponseEntity.ok(byId);
     }
 
     @GetMapping("/all")

@@ -36,7 +36,7 @@ Content-Type: application/json
 
 
 ###
-POST http://localhost:8080/api/v1/vault/import
+POST {{host}}/{{api.path}}/{{api.version}}/vault/import
 Content-Type: application/json
 
 [
@@ -63,7 +63,7 @@ Content-Type: application/json
 ]
 
 ###
-GET http://localhost:8080/api/v1/vault/all
+GET {{host}}/{{api.path}}/{{api.version}}/vault/all
 
 ### Get all vault items
 # @name getAllVaultItems
@@ -75,11 +75,14 @@ GET {{host}}/{{api.path}}/{{api.version}}/vault/1
 
 ### Find by login
 # @name findVaultItemByLogin
-GET {{host}}/{{api.path}}/{{api.version}}/vault?login=my.email@gmail.com
+GET {{host}}/{{api.path}}/{{api.version}}/vault/login/my.email@gmail.com
 
 ### Find by resource
 # @name findVaultItemByResource
 GET {{host}}/{{api.path}}/{{api.version}}/vault/resource?resource=https://mail.google.com
+
+###Find by collection
+GET {{host}}/{{api.path}}/{{api.version}}/vault/collection/Social Media
 
 ### Update a vault item
 # @name updateVaultItem

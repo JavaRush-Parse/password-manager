@@ -86,6 +86,8 @@ public class VaultItemService {
 
   public List<VaultItem> findByResource(String resource){ return  vaultItemRepository.findVaultItemByResource(resource);}
 
+  public List<VaultItem> findByCollectionName(String collectionName){ return vaultItemRepository.findVaultItemByCollectionName(collectionName);}
+
   public void deleteById(Long id){
     vaultItemRepository.deleteById(id);
   }
