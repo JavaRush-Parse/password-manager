@@ -66,11 +66,14 @@ GET {{host}}/{{api.path}}/{{api.version}}/vault/1
 
 ### Find by login
 # @name findVaultItemByLogin
-GET {{host}}/{{api.path}}/{{api.version}}/vault?login=my.email@gmail.com
+GET http://localhost:8080/api/v1/vault/login/my.email@gmail.com
 
 ### Find by resource
 # @name findVaultItemByResource
 GET {{host}}/{{api.path}}/{{api.version}}/vault/resource?resource=https://mail.google.com
+
+###Find by collection
+GET http://localhost:8080/api/v1/vault/collection/Social Media
 
 ### Update a vault item
 # @name updateVaultItem
