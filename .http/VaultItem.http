@@ -17,7 +17,7 @@ Content-Type: application/json
 
 ### Create a new vault item and assign it to a collection
 # @name createVaultItemInCollection
-POST http://localhost:8080/api/v1/vault/create
+POST {{host}}/{{api.path}}/{{api.version}}/vault/create
 Content-Type: application/json
 
 {
@@ -33,7 +33,7 @@ Content-Type: application/json
 
 
 ###
-POST http://localhost:8080/api/v1/vault/import
+POST {{host}}/{{api.path}}/{{api.version}}/vault/import
 Content-Type: application/json
 
 [
@@ -54,7 +54,7 @@ Content-Type: application/json
 ]
 
 ###
-GET http://localhost:8080/api/v1/vault/all
+GET {{host}}/{{api.path}}/{{api.version}}/vault/all
 
 ### Get all vault items
 # @name getAllVaultItems
@@ -66,14 +66,14 @@ GET {{host}}/{{api.path}}/{{api.version}}/vault/1
 
 ### Find by login
 # @name findVaultItemByLogin
-GET http://localhost:8080/api/v1/vault/login/my.email@gmail.com
+GET {{host}}/{{api.path}}/{{api.version}}/vault/login/my.email@gmail.com
 
 ### Find by resource
 # @name findVaultItemByResource
 GET {{host}}/{{api.path}}/{{api.version}}/vault/resource?resource=https://mail.google.com
 
 ###Find by collection
-GET http://localhost:8080/api/v1/vault/collection/Social Media
+GET {{host}}/{{api.path}}/{{api.version}}/vault/collection/Social Media
 
 ### Update a vault item
 # @name updateVaultItem
