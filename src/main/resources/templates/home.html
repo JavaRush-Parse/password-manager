@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 
 <body>
 <div class="main-content-area" layout:fragment="content">
@@ -12,12 +15,23 @@
         <button hx-get="/vault-item/create-modal"
                 hx-target="#modal-placeholder"
                 hx-swap="innerHTML"
-                class="btn-secondary">
+                class="btn-secondary"
+        >
             + New Password
         </button>
+
+        <button hx-get="/collections/create-modal"
+                hx-target="#modal-placeholder"
+                hx-swap="innerHTML"
+                class="btn-secondary"
+        >
+            + New Collection
+        </button>
+
+
         <a th:href="@{/collections/create}"
            class="btn-secondary">
-            + New Collection
+            + New Collection (OLD)
         </a>
     </div>
 </div>

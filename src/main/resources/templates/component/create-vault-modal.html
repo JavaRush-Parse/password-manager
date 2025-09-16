@@ -1,52 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="modal" id="modal-backdrop" class="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50" onclick="if (event.target.id === 'modal-backdrop') { this.remove() }">
-    <div id="modal-content" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-semibold">New Vault Item</h2>
-            <button onclick="this.closest('#modal-backdrop').remove()" class="text-gray-500 hover:text-gray-700">&times;</button>
+<div th:fragment="modal" th:replace="~{component/modal :: modal(title='New Vault Item', form=~{:: form})}"></div>
+
+<th:block th:fragment="form">
+    <form hx:post="@{/vault-item/save}" hx-target="#modal-backdrop" hx-swap="outerHTML" th:object="${vault}" class="space-y-4">
+        <div>
+            <label class="form-label">Name<span class="text-red-600">*</span></label>
+            <input type="text" th:field="*{name}" placeholder="Please, enter your name"
+                   class="form-input" required/>
         </div>
-        <form hx:post="@{/vault-item/save}" hx-target="#modal-backdrop" hx-swap="outerHTML" th:object="${vault}" class="space-y-4">
-            <div>
-                <label class="form-label">Name<span class="text-red-600">*</span></label>
-                <input type="text" th:field="*{name}" placeholder="Please, enter your name"
-                       class="form-input" required/>
-            </div>
-            <div>
-                <label class="form-label">Resource (URL)</label>
-                <input type="text" th:field="*{resource}" placeholder="resource"
-                       class="form-input"/>
-            </div>
-            <div>
-                <label class="form-label">Login<span class="text-red-600">*</span></label>
-                <input type="text" th:field="*{login}" placeholder="Please, enter your login"
-                       class="form-input" required/>
-            </div>
-            <div>
-                <label class="form-label">Password<span class="text-red-600">*</span></label>
-                <input type="password" th:field="*{password}"
-                       class="form-input" required/>
-            </div>
-            <div>
-                <label for="collection" class="form-label">Collection</label>
-                <select id="collection" th:field="*{collection}" class="form-input">
-                    <option value="">Unassigned</option>
-                    <option th:each="collection : ${collections}" th:value="${collection.id}" th:text="${collection.name}"></option>
-                </select>
-            </div>
-            <div>
-                <label class="form-label">Description</label>
-                <textarea th:field="*{description}" rows="3"
-                          placeholder="Description..."
-                          class="form-input"></textarea>
-            </div>
-            <div class="flex justify-end gap-3 pt-2">
-                <button type="submit" class="btn-primary">Save Item</button>
-                <button type="button" onclick="this.closest('#modal-backdrop').remove()" class="btn-secondary">Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
+        <div>
+            <label class="form-label">Resource (URL)</label>
+            <input type="text" th:field="*{resource}" placeholder="resource"
+                   class="form-input"/>
+        </div>
+        <div>
+            <label class="form-label">Login<span class="text-red-600">*</span></label>
+            <input type="text" th:field="*{login}" placeholder="Please, enter your login"
+                   class="form-input" required/>
+        </div>
+        <div>
+            <label class="form-label">Password<span class="text-red-600">*</span></label>
+            <input type="password" th:field="*{password}"
+                   class="form-input" required/>
+        </div>
+        <div>
+            <label for="collection" class="form-label">Collection</label>
+            <select id="collection" th:field="*{collection}" class="form-input">
+                <option value="">Unassigned</option>
+                <option th:each="collection : ${collections}" th:value="${collection.id}" th:text="${collection.name}"></option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label">Description</label>
+            <textarea th:field="*{description}" rows="3"
+                      placeholder="Description..."
+                      class="form-input"></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-2">
+            <button type="submit" class="btn-primary">Save Item</button>
+            <button type="button" onclick="this.closest('#modal-backdrop').remove()" class="btn-secondary">Cancel</button>
+        </div>
+    </form>
+</th:block>
 </body>
 </html>

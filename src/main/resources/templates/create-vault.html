@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 
 <body>
 <main class="main-content-area-s" layout:fragment="content">
     <h1 class="mt-8 mb-6 text-2xl font-semibold text-stone-950">New Vault Item</h1>
 
     <div class="container">
+
         <form th:action="@{/vault-item/save}" th:object="${vault}" method="post" class="space-y-5">
 
             <div>
@@ -36,7 +38,8 @@
                 <label for="collection" class="form-label">Collection</label>
                 <select id="collection" th:field="*{collection}" class="form-input">
                     <option value="">Unassigned</option>
-                    <option th:each="collection : ${collections}" th:value="${collection.id}" th:text="${collection.name}"></option>
+                    <option th:each="collection : ${collections}" th:value="${collection.id}"
+                            th:text="${collection.name}"></option>
                 </select>
             </div>
 
