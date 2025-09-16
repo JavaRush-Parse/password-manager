@@ -12,7 +12,10 @@ Content-Type: application/json
   "resource": "https://mail.google.com",
   "description": "Personal Gmail account.",
   "login": "my.email@gmail.com",
-  "password": "MySecretPassword123!"
+  "password": "MySecretPassword123!",
+  "collection": {
+    "id": 2
+  }
 }
 
 ### Create a new vault item and assign it to a collection
@@ -42,14 +45,20 @@ Content-Type: application/json
     "resource": "test-resource.com",
     "description": "Test description",
     "login": "test@gmail.com",
-    "password": "testPassword"
+    "password": "testPassword",
+    "collection": {
+      "id": 2
+    }
   },
   {
     "name": "Import 2",
     "resource": "test-resource.com",
     "description": "Test description",
     "login": "",
-    "password": "testPassword"
+    "password": "testPassword",
+    "collection": {
+      "id": 2
+    }
   }
 ]
 
@@ -82,7 +91,10 @@ Content-Type: application/json
   "resource": "https://accounts.google.com",
   "description": "Personal Google account.",
   "login": "my.email@gmail.com",
-  "password": "MyNewSecretPassword789!"
+  "password": "MyNewSecretPassword789!",
+  "collection": {
+    "id": 2
+  }
 }
 
 ### Delete a vault item
