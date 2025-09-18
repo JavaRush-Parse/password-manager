@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Dev" type="CompoundRunConfigurationType">
+    <toRun name="build" type="js.build_tools.npm" />
+    <toRun name="watch" type="js.build_tools.npm" />
+    <toRun name="PasswordManagerApplication" type="SpringBootApplicationConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>
