@@ -47,11 +47,10 @@ public class VaultControllerWeb {
         return "component/create-vault-modal :: modal";
     }
 
-    @HxRequest
-    @HxTrigger("refreshVaultTable")
-    @PostMapping("/save")
+    @PostMapping(value = "/save", headers = "HX-Request=true")
     @ResponseBody
-    public String saveNewItem(@ModelAttribute("vault") VaultItem item, HttpServletResponse response) {
+    @HxTrigger("refreshVaultTable")
+    public String saveNewItemHtmx(@ModelAttribute("vault") VaultItem item, HttpServletResponse response) {
         try {
             vaultItemService.save(item);
             return "";
@@ -60,6 +59,12 @@ public class VaultControllerWeb {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return "Error saving item: " + e.getMessage();
         }
+    }
+
+    @PostMapping("/save")
+    public String saveNewItem(@ModelAttribute("vault") VaultItem item) {
+        vaultItemService.save(item);
+        return "redirect:/";
     }
 
     @GetMapping("/edit/{id}")

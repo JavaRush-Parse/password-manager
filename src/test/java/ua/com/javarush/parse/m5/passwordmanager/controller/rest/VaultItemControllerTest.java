@@ -106,7 +106,7 @@ class VaultItemControllerTest {
         item.setLogin("testuser");
         when(service.findByLogin("testuser")).thenReturn(List.of(item));
 
-        mockMvc.perform(get("/api/v1/vault").param("login", "testuser"))
+        mockMvc.perform(get("/api/v1/vault/login/{login}", "testuser"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].login").value("testuser"));
     }
@@ -115,7 +115,7 @@ class VaultItemControllerTest {
     void whenGetByLoginNotFound_thenReturns404() throws Exception {
         when(service.findByLogin("testuser")).thenReturn(List.of());
 
-        mockMvc.perform(get("/api/v1/vault").param("login", "testuser"))
+        mockMvc.perform(get("/api/v1/vault/login/{login}", "testuser"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Vault items for login 'testuser' not found"));
     }
