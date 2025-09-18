@@ -27,7 +27,7 @@ public class VaultControllerWeb {
     Optional<VaultItem> byId = vaultItemService.findById(id);
     byId.ifPresent(
         vaultItem -> {
-          model.addAttribute("vault", vaultItem);
+          model.addAttribute("vaultItem", vaultItem);
         });
     return "vault";
   }
