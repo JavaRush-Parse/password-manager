@@ -1,5 +1,8 @@
 package ua.com.javarush.parse.m5.passwordmanager.controller.web;
 
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxTrigger;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +38,36 @@ public class CollectionControllerWeb {
         collectionService.save(collection);
         return "redirect:/";
     }
+
+    @HxRequest
+    @HxTrigger("refreshVaultTable")
+    @PostMapping("/save")
+    @ResponseBody
+    public String saveNewItem(@ModelAttribute("collection") CollectionForm form, HttpServletResponse response) {
+        try {
+
+            Collection collection = new Collection();
+            collection.setName(form.getName());
+            collection.setDescription(form.getDescription());
+            collection.setColor(form.getColor());
+            collection.setIcon(form.getIcon());
+            collectionService.save(collection);
+
+            return "";
+        } catch (Exception e) {
+            log.error("Error saving collection", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return "Error saving collection: " + e.getMessage();
+        }
+    }
+
+    @HxRequest
+    @GetMapping("/create-modal")
+    public String showCreateFormModal(Model model) {
+        model.addAttribute("collection", new CollectionForm());
+        return "component/create-collection-modal :: modal";
+    }
+
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {

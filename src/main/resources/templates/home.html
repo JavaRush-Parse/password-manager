@@ -1,33 +1,40 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Password Manager</title>
-    <link th:href="@{/main.css}" rel="stylesheet">
-</head>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 
 <body>
-<div th:replace="~{component/header}"></div>
+<div class="main-content-area" layout:fragment="content">
 
-<div class="main-content-area">
-
-    <div class="mb-4">
+    <div class="mb-4" id="vault-table-container" hx-get="/vault-table" hx-trigger="refreshVaultTable from:body" hx-swap="innerHTML">
         <div th:replace="~{component/vault-table :: vaultTable(${vaultItems}) }"></div>
     </div>
 
     <div class="flex justify-end mb-4 space-x-4">
-        <a th:href="@{/vault-item/create}"
-           class="btn-secondary">
+        <button hx-get="/vault-item/create-modal"
+                hx-target="#modal-placeholder"
+                hx-swap="innerHTML"
+                class="btn-secondary"
+        >
             + New Password
-        </a>
+        </button>
+
+        <button hx-get="/collections/create-modal"
+                hx-target="#modal-placeholder"
+                hx-swap="innerHTML"
+                class="btn-secondary"
+        >
+            + New Collection
+        </button>
+
+
         <a th:href="@{/collections/create}"
            class="btn-secondary">
-            + New Collection
+            + New Collection (OLD)
         </a>
     </div>
 </div>
-<div th:replace="~{component/footer}"></div>
 </body>
 
 </html>

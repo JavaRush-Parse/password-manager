@@ -1,66 +1,53 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Collection</title>
-    <link th:href="@{/main.css}" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
 
 <body>
-<div class="min-h-screen flex flex-col">
-    <div th:replace="~{component/header}"></div>
+<main class="main-content-area-s" layout:fragment="content">
+    <h1 class="mt-8 mb-6 text-2xl font-semibold text-stone-950">Edit Collection</h1>
 
-    <main class="main-content-area-s">
-        <h1 class="mt-8 mb-6 text-2xl font-semibold text-stone-950">Edit Collection</h1>
+    <div class="container">
+        <form th:action="@{'/collections/update/' + ${collection.id}}" method="post" th:object="${collection}" class="space-y-5">
+            <input th:field="*{id}" type="hidden"/>
+            <div>
+                <label class="form-label">Name<span class="text-red-600">*</span></label>
+                <input th:field="*{name}" type="text" required
+                       class="form-input"/>
+            </div>
+            <div>
+                <label class="form-label">Description</label>
+                <textarea th:field="*{description}" rows="4"
+                          class="form-input"></textarea>
+            </div>
+            <div>
+                <label class="form-label">Color</label>
+                <div class="flex items-center gap-3">
+                    <input th:field="*{color}" type="color"
+                           class="h-10 w-12 cursor-pointer rounded-md border border-gray-300 p-1 shadow-sm"/>
+                    <span class="text-xs text-gray-500">Update the color for this collection.</span>
+                </div>
+            </div>
 
-        <div class="container">
-            <form th:action="@{'/collections/update/' + ${collection.id}}" method="post" th:object="${collection}" class="space-y-5">
-                <input th:field="*{id}" type="hidden"/>
-                <div>
-                    <label class="form-label">Name<span class="text-red-600">*</span></label>
-                    <input th:field="*{name}" type="text" required
-                           class="form-input"/>
-                </div>
-                <div>
-                    <label class="form-label">Description</label>
-                    <textarea th:field="*{description}" rows="4"
-                              class="form-input"></textarea>
-                </div>
-                <div>
-                    <label class="form-label">Color</label>
-                    <div class="flex items-center gap-3">
-                        <input th:field="*{color}" type="color"
-                               class="h-10 w-12 cursor-pointer rounded-md border border-gray-300 p-1 shadow-sm"/>
-                        <span class="text-xs text-gray-500">Update the color for this collection.</span>
-                    </div>
-                </div>
+            <div>
+                <label for="icon" class="form-label">Icon</label>
+                <input id="icon" th:field="*{icon}" type="text"
+                       placeholder="e.g. fa-folder, fa-lock"
+                       class="form-input"/>
+                <p class="mt-1 text-xs text-gray-500">Enter a class name for an icon (e.g., from Font Awesome).</p>
+            </div>
 
-                <div>
-                    <label for="icon" class="form-label">Icon</label>
-                    <input id="icon" th:field="*{icon}" type="text"
-                           placeholder="e.g. fa-folder, fa-lock"
-                           class="form-input"/>
-                    <p class="mt-1 text-xs text-gray-500">Enter a class name for an icon (e.g., from Font Awesome).</p>
-                </div>
-
-                <div class="flex items-center gap-3 pt-2">
-                    <button type="submit"
-                            class="btn-primary">
-                        Update
-                    </button>
-                    <a th:href="@{/}"
-                       class="btn-secondary">
-                        Cancel
-                    </a>
-                </div>
-            </form>
-        </div>
-    </main>
-
-    <div th:replace="~{component/footer}"></div>
-</div>
+            <div class="flex items-center gap-3 pt-2">
+                <button type="submit"
+                        class="btn-primary">
+                    Update
+                </button>
+                <a th:href="@{/}"
+                   class="btn-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
 </body>
 
 </html>
