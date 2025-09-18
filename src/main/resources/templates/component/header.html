@@ -20,23 +20,33 @@
                     </li>
 
                     <li>
-                        <a class="text-gray-500 transition hover:text-gray-500/75" href="https://github.com/JavaRush-Parse/password-manager"> Github </a>
+                        <a class="text-gray-500 transition hover:text-gray-500/75"
+                           href="https://github.com/JavaRush-Parse/password-manager"> Github </a>
                     </li>
                 </ul>
             </nav>
 
             <div class="flex items-center gap-4">
                 <div class="sm:flex sm:gap-4">
-                    <a
-                            class="btn-primary"
-                            href="#"
-                    >
-                        Login
-                    </a>
+                    <div class="sm:flex sm:gap-4">
+                        <a
+                                class="btn-primary"
+                                th:href="@{/login}"
+                        >Login
+                        </a>
+
+                        <!--                        <form th:action="@{/logout}"-->
+                        <!--                              method="post">-->
+                        <!--                            <button type="submit"-->
+                        <!--                                    class="btn-primary">-->
+                        <!--                                Logout-->
+                        <!--                            </button>-->
+                        <!--                        </form>-->
+                    </div>
 
                     <a
                             class="btn-secondary hidden sm:block"
-                            href="#"
+                            th:href="@{/register}"
                     >
                         Register
                     </a>
