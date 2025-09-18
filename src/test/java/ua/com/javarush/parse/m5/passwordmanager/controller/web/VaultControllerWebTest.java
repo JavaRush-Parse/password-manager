@@ -49,7 +49,7 @@ class VaultControllerWebTest {
         .perform(get("/vault-item/{id}", 1L))
         .andExpect(status().isOk())
         .andExpect(view().name("vault"))
-        .andExpect(model().attributeExists("vault"));
+        .andExpect(model().attributeExists("vaultItem"));
   }
 
   @Test

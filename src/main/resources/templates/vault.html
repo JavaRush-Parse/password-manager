@@ -2,33 +2,110 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 
-<body class="bg-light p-5 text-black">
+<body class="bg-gray-100">
 
-<div layout:fragment="content">
-    <h1>Password Manager</h1>
-</div>
+<div layout:fragment="content" class="container mx-auto mt-10 p-4">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+            <div th:if="${vaultItem}">
+                <div class="flex justify-between items-center mb-4">
+                    <h1 class="text-2xl font-bold text-gray-800" th:text="${vaultItem.name}">Item name</h1>
+                    <a th:href="@{/}" class="text-gray-900 hover:text-gray-700">&larr; Back to list</a>
+                </div>
 
-<div th:if="${vault}" class="overflow-hidden rounded-lg shadow-sm transition hover:shadow-lg">
-    <h2 th:text="${vault.name}">Item name</h2>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Resource</p>
+                        <p class="mt-1 text-gray-900" th:text="${vaultItem.resource}">No resource</p>
+                    </div>
 
-    <p>
-        <strong>Description:</strong>
-        <span th:text="${vault.description}">No description</span>
-    </p>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Description</p>
+                        <p class="mt-1 text-gray-900" th:text="${vaultItem.description}">No description</p>
+                    </div>
 
-    <p>
-        <strong>Login:</strong>
-        <span th:text="${vault.login}">Login</span>
-    </p>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Login</p>
+                        <p class="mt-1 text-gray-900" th:text="${vaultItem.login}">Login</p>
+                    </div>
 
-    <p>
-        <strong>Password:</strong>
-        <span th:text="${vault.password}">Password</span>
-    </p>
-</div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Password</p>
+                        <div class="mt-1 flex-column items-center space-x-2">
+                            <p id="password-field" class="text-gray-900 font-mono">••••••••</p>
+                            <div class="mt-1 flex items-center space-x-2">
+                                <button type="button" id="toggle-password-btn"
+                                        class="text-sm text-gray-900 hover:text-gray-700 focus:outline-none">Show
+                                </button>
+                                <button type="button" id="copy-password-btn"
+                                        class="text-sm text-gray-900 hover:text-gray-700 focus:outline-none">Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-<div th:if="${vault == null}">
-    <p>No vault item found.</p>
+                    <div th:if="${vaultItem.collection}">
+                        <p class="text-sm font-medium text-gray-500">Collection</p>
+                        <p class="mt-1 text-gray-900" th:text="${vaultItem.collection.name}">No collection</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end space-x-4">
+                    <a th:href="@{/vault-item/edit/{id}(id=${vaultItem.id})}"
+                       class="btn-primary">
+                        Edit
+                    </a>
+                    <form th:action="@{/vault-item/delete/{id}(id=${vaultItem.id})}" th:method="delete"
+                          onsubmit="return confirm('Are you sure you want to delete this item?');">
+                        <button type="submit"
+                                class="btn-danger">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div th:if="${vaultItem == null}" class="text-center py-10">
+                <p class="text-gray-500">No vault item found.</p>
+                <a th:href="@{/}" class="mt-4 inline-block text-gray-900 hover:text-gray-700">&larr; Back to list</a>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const vaultItem = /*[[${vaultItem}]]*/ null;
+        if (vaultItem) {
+            const passwordField = document.getElementById('password-field');
+            const toggleBtn = document.getElementById('toggle-password-btn');
+            const copyBtn = document.getElementById('copy-password-btn');
+            const password = /*[[${vaultItem.password}]]*/ '';
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    if (passwordField.textContent === '••••••••') {
+                        passwordField.textContent = password;
+                        toggleBtn.textContent = 'Hide';
+                    } else {
+                        passwordField.textContent = '••••••••';
+                        toggleBtn.textContent = 'Show';
+                    }
+                });
+            }
+
+            if (copyBtn) {
+                copyBtn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(password).then(() => {
+                        const originalText = copyBtn.textContent;
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => {
+                            copyBtn.textContent = originalText;
+                        }, 2000);
+                    });
+                });
+            }
+        }
+        /*]]>*/
+    </script>
 </div>
 
 </body>
