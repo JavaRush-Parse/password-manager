@@ -2,13 +2,12 @@ package ua.com.javarush.parse.m5.passwordmanager.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SoftDelete;
-
-import java.util.Objects;
 
 @Entity
 @SoftDelete
@@ -30,6 +29,7 @@ public class VaultItem {
   private String login;
 
   private String password;
+
   @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "collection_id")
@@ -40,7 +40,13 @@ public class VaultItem {
     if (o == null || getClass() != o.getClass()) return false;
 
     VaultItem vaultItem = (VaultItem) o;
-    return id == vaultItem.id && Objects.equals(name, vaultItem.name) && Objects.equals(resource, vaultItem.resource) && Objects.equals(description, vaultItem.description) && Objects.equals(login, vaultItem.login) && Objects.equals(password, vaultItem.password) && Objects.equals(collection, vaultItem.collection);
+    return id == vaultItem.id
+        && Objects.equals(name, vaultItem.name)
+        && Objects.equals(resource, vaultItem.resource)
+        && Objects.equals(description, vaultItem.description)
+        && Objects.equals(login, vaultItem.login)
+        && Objects.equals(password, vaultItem.password)
+        && Objects.equals(collection, vaultItem.collection);
   }
 
   @Override

@@ -8,6 +8,6 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class VaultItemIdentifier {
-    private String resource;
-    private String login;
+  private String resource;
+  private String login;
 }

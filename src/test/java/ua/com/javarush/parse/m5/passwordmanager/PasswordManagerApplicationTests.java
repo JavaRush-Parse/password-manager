@@ -2,7 +2,6 @@ package ua.com.javarush.parse.m5.passwordmanager;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -10,7 +9,5 @@ import org.springframework.test.context.ActiveProfiles;
 class PasswordManagerApplicationTests {
 
   @Test
-  void contextLoads() {
-  }
-
+  void contextLoads() {}
 }
