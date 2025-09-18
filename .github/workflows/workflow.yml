@@ -36,22 +36,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-#  fmt-check:
-#    needs: setup
-#    runs-on: ubuntu-latest
-#    name: Verify code formatting
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: Set up JDK ${{ env.JAVA_VERSION }}
-#        uses: actions/setup-java@v3
-#        with:
-#          distribution: temurin
-#          java-version: ${{ env.JAVA_VERSION }}
-#
-#      - name: Format check
-#        run: mvn com.spotify.fmt:fmt-maven-plugin:2.25:check
+  fmt-check:
+    needs: setup
+    runs-on: ubuntu-latest
+    name: Verify code formatting
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Format check
+        run: mvn com.spotify.fmt:fmt-maven-plugin:2.25:check
 
   test:
 #    needs: [setup, fmt-check]
