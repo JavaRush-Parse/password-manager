@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
-@Tag(name = "Vault Item Management", description = "API for managing individual passwords and vault items")
+@Tag(
+    name = "Vault Item Management",
+    description = "API for managing individual passwords and vault items")
 @RestController
 @RequestMapping("/api/v1/vault")
 @RequiredArgsConstructor
@@ -35,17 +37,20 @@ public class VaultItemController {
   @GetMapping("/{id}")
   @Operation(summary = "Get a vault item by ID")
   public ResponseEntity<VaultItem> findById(@PathVariable Long id) {
-    return vaultItemService.findById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    return vaultItemService
+        .findById(id)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @PutMapping("/{id}")
   @Operation(summary = "Update an existing vault item")
-  public ResponseEntity<VaultItem> update(@PathVariable Long id, @RequestBody VaultItem updatedItemData) {
-    return vaultItemService.update(id, updatedItemData)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+  public ResponseEntity<VaultItem> update(
+      @PathVariable Long id, @RequestBody VaultItem updatedItemData) {
+    return vaultItemService
+        .update(id, updatedItemData)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @GetMapping("/login/{login}")
