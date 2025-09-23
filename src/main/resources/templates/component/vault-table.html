@@ -7,24 +7,24 @@
 
         <thead class="ltr:text-left rtl:text-right">
             <tr class="*:font-medium *:text-gray-900">
-                <th class="px-3 py-2 whitespace-nowrap">Id</th>
                 <th class="px-3 py-2 whitespace-nowrap">Name</th>
                 <th class="px-3 py-2 whitespace-nowrap">Resource</th>
                 <th class="px-3 py-2 whitespace-nowrap">Description</th>
                 <th class="px-3 py-2 whitespace-nowrap">Login</th>
-                <th class="px-3 py-2 whitespace-nowrap">Password</th>
-                <th class="px-3 py-2 whitespace-nowrap text-center">Actions</th>
             </tr>
         </thead>
 
     <tbody class="bg-white divide-y divide-gray-200">
         <tr th:each="vaultItem : ${vaultItems}"  class="*:text-gray-900 *:first:font-medium">
-            <td th:text="${vaultItem.id}" class="px-3 py-2 whitespace-nowrap"></td>
-            <td th:text="${vaultItem.name}" class="px-3 py-2 whitespace-nowrap"></td>
+            <td class="px-3 py-2 whitespace-nowrap">
+                <a th:href="@{/vault-item/{id}(id=${vaultItem.id})}"
+                   th:text="${vaultItem.name}"
+                   class="text-gray-900 hover:underline">
+                </a>
+            </td>
             <td th:text="${vaultItem.resource}" class="px-3 py-2 whitespace-nowrap"></td>
             <td th:text="${vaultItem.description}" class="px-3 py-2 whitespace-nowrap"></td>
             <td th:text="${vaultItem.login}" class="px-3 py-2 whitespace-nowrap"></td>
-            <td th:text="${vaultItem.password}" class="px-3 py-2 whitespace-nowrap"></td>
             <td>
                 <a th:href="@{/vault-item/edit/{id}(id=${vaultItem.id})}"
                    class="px-3 py-2 whitespace-nowrap">
