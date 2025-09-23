@@ -1,107 +1,81 @@
 package ua.com.javarush.parse.m5.passwordmanager.controller.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.com.javarush.parse.m5.passwordmanager.dto.ErrorResponse;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
-@Slf4j
-@RequiredArgsConstructor
+@Tag(name = "Vault Item Management", description = "API for managing individual passwords and vault items")
 @RestController
 @RequestMapping("/api/v1/vault")
+@RequiredArgsConstructor
 public class VaultItemController {
 
   private final VaultItemService vaultItemService;
 
   @PostMapping("/create")
-  public ResponseEntity<VaultItem> save(@RequestBody VaultItem item) {
-    VaultItem save = vaultItemService.save(item);
-    return new ResponseEntity<>(save, HttpStatus.CREATED);
+  @ResponseStatus(HttpStatus.CREATED)
+  @Operation(summary = "Create a new vault item")
+  public VaultItem create(@RequestBody VaultItem item) {
+    return vaultItemService.save(item);
   }
 
   @PostMapping("/import")
-  public ResponseEntity<?> importVaultItems(@RequestBody List<VaultItem> items) {
-    try {
-      vaultItemService.importVaultItems(items);
-      return ResponseEntity.ok().build();
-    } catch (Exception e) {
-      return ResponseEntity.badRequest()
-          .body(
-              Map.of(
-                  "status", HttpStatus.BAD_REQUEST.value(),
-                  "message", e.getMessage()));
-    }
+  @ResponseStatus(HttpStatus.CREATED)
+  @Operation(summary = "Import multiple vault items in a batch")
+  public List<VaultItem> importVaultItems(@RequestBody List<VaultItem> items) {
+    return vaultItemService.importVaultItems(items);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> findById(@PathVariable Long id) {
-    Optional<VaultItem> item = vaultItemService.findById(id);
-    if (item.isPresent()) {
-      return ResponseEntity.ok(item.get());
-    } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(ErrorResponse.of("Vault item with id '" + id + "' not found"));
-    }
+  @Operation(summary = "Get a vault item by ID")
+  public ResponseEntity<VaultItem> findById(@PathVariable Long id) {
+    return vaultItemService.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> update(@PathVariable Long id, @RequestBody VaultItem updatedItemData) {
-    Optional<VaultItem> updatedItem = vaultItemService.update(id, updatedItemData);
-    if (updatedItem.isPresent()) {
-      return ResponseEntity.ok(updatedItem.get());
-    } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(ErrorResponse.of("Vault item with id '" + id + "' not found"));
-    }
+  @Operation(summary = "Update an existing vault item")
+  public ResponseEntity<VaultItem> update(@PathVariable Long id, @RequestBody VaultItem updatedItemData) {
+    return vaultItemService.update(id, updatedItemData)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
   }
 
   @GetMapping("/login/{login}")
-  public ResponseEntity<?> findByLogin(@PathVariable String login) {
-    List<VaultItem> byLogin = vaultItemService.findByLogin(login);
-
-    if (byLogin.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(ErrorResponse.of("Vault items for login '" + login + "' not found"));
-    }
-
-    return ResponseEntity.ok(byLogin);
+  @Operation(summary = "Find vault items by login")
+  public List<VaultItem> findByLogin(@PathVariable String login) {
+    return vaultItemService.findByLogin(login);
   }
 
   @GetMapping("/resource")
-  public ResponseEntity<?> findByResource(@RequestParam String resource) {
-    List<VaultItem> byResource = vaultItemService.findByResource(resource);
-    if (byResource.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(ErrorResponse.of("Vault items for resource '" + resource + "' not found"));
-    }
-    return ResponseEntity.ok(byResource);
+  @Operation(summary = "Find vault items by resource URL")
+  public List<VaultItem> findByResource(@RequestParam String resource) {
+    return vaultItemService.findByResource(resource);
   }
 
   @GetMapping("/collection/{collectionName}")
-  public ResponseEntity<?> findByCollectionName(@PathVariable String collectionName) {
-    List<VaultItem> byId = vaultItemService.findByCollectionName(collectionName);
-    if (byId.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(ErrorResponse.of("Vault items for collection '" + collectionName + "' not found"));
-    }
-    return ResponseEntity.ok(byId);
+  @Operation(summary = "Find vault items by collection name")
+  public List<VaultItem> findByCollectionName(@PathVariable String collectionName) {
+    return vaultItemService.findByCollectionName(collectionName);
   }
 
   @GetMapping("/all")
-  public ResponseEntity<List<VaultItem>> getAll() {
-    return new ResponseEntity<>(vaultItemService.findAll(), HttpStatus.OK);
+  @Operation(summary = "Get all vault items")
+  public List<VaultItem> getAll() {
+    return vaultItemService.findAll();
   }
 
-  @DeleteMapping("{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  @DeleteMapping("/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @Operation(summary = "Delete a vault item by ID")
+  public void delete(@PathVariable Long id) {
     vaultItemService.deleteById(id);
-    return ResponseEntity.ok().build();
   }
 }
