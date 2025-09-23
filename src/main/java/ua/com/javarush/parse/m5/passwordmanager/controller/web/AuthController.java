@@ -14,33 +14,34 @@ import ua.com.javarush.parse.m5.passwordmanager.service.UserService;
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
-    private final UserService userService;
+  private final UserService userService;
 
-    @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
-        model.addAttribute("user", new UserRegistrationRequestDto());
-        return "register";
+  @GetMapping("/register")
+  public String showRegistrationForm(Model model) {
+    model.addAttribute("user", new UserRegistrationRequestDto());
+    return "register";
+  }
+
+  @PostMapping("/register")
+  public String registerUser(
+      @ModelAttribute("user") @Valid UserRegistrationRequestDto request,
+      BindingResult bindingResult) {
+    if (bindingResult.hasErrors()) {
+      return "register";
     }
 
-    @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") @Valid UserRegistrationRequestDto request,
-                               BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "register";
-        }
-
-        try {
-            userService.register(request);
-        } catch (RuntimeException e) {
-            bindingResult.rejectValue("email", "email.exists", e.getMessage());
-            return "register";
-        }
-
-        return "redirect:/login?registration_success";
+    try {
+      userService.register(request);
+    } catch (RuntimeException e) {
+      bindingResult.rejectValue("email", "email.exists", e.getMessage());
+      return "register";
     }
 
-    @GetMapping("/login")
-    public String showLoginForm() {
-        return "login";
-    }
+    return "redirect:/login?registration_success";
+  }
+
+  @GetMapping("/login")
+  public String showLoginForm() {
+    return "login";
+  }
 }

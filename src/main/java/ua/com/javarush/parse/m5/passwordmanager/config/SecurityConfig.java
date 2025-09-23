@@ -22,51 +22,46 @@ import ua.com.javarush.parse.m5.passwordmanager.security.JwtAuthenticationFilter
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
-    private final UserDetailsService userDetailsService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final UserDetailsService userDetailsService;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String[] SWAGGER_WHITELIST = {
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/v3/api-docs/**"
-    };
+  private static final String[] SWAGGER_WHITELIST = {
+    "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**"
+  };
 
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder getPasswordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .cors(AbstractHttpConfigurer::disable)
-                .csrf(Customizer.withDefaults())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // Статика (CSS, JS)
-                        .requestMatchers("/", "/login", "/register", "/error").permitAll() // Публичные страницы
-                        .requestMatchers("/api/v1/auth/**").permitAll() // API для регистрации/входа
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http.cors(AbstractHttpConfigurer::disable)
+        .csrf(Customizer.withDefaults())
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                    .permitAll() // Статика (CSS, JS)
+                    .requestMatchers("/", "/login", "/register", "/error")
+                    .permitAll() // Публичные страницы
+                    .requestMatchers("/api/v1/auth/**")
+                    .permitAll() // API для регистрации/входа
+                    .requestMatchers(SWAGGER_WHITELIST)
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/", true).permitAll())
+        .logout(logout -> logout.logoutSuccessUrl("/").permitAll())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+        .userDetailsService(userDetailsService)
+        .build();
+  }
 
-                        .requestMatchers(SWAGGER_WHITELIST).permitAll()
-
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/")
-                        .permitAll()
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .userDetailsService(userDetailsService)
-                .build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+      throws Exception {
+    return config.getAuthenticationManager();
+  }
 }

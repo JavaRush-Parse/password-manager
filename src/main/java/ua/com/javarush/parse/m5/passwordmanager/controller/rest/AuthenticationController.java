@@ -23,21 +23,29 @@ import ua.com.javarush.parse.m5.passwordmanager.service.UserService;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
-    private final UserService userService;
-    private final AuthenticationService authenticationService;
+  private final UserService userService;
+  private final AuthenticationService authenticationService;
 
-    @PostMapping("/register")
-    @Operation(summary = "Register a new user",
-            description = "Creates a new user account based on the provided data.")
-    @ApiResponse(responseCode = "200", description = "User registered successfully",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class)))
-    public UserResponseDto register(@RequestBody @Valid UserRegistrationRequestDto requestDto) {
-        return userService.register(requestDto);
-    }
+  @PostMapping("/register")
+  @Operation(
+      summary = "Register a new user",
+      description = "Creates a new user account based on the provided data.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "User registered successfully",
+      content =
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = UserResponseDto.class)))
+  public UserResponseDto register(@RequestBody @Valid UserRegistrationRequestDto requestDto) {
+    return userService.register(requestDto);
+  }
 
-    @PostMapping("/login")
-    @Operation(summary = "Authenticate a user", description = "Authenticates a user and returns a JWT token upon success.")
-    public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto requestDto) {
-        return authenticationService.authenticate(requestDto);
-    }
+  @PostMapping("/login")
+  @Operation(
+      summary = "Authenticate a user",
+      description = "Authenticates a user and returns a JWT token upon success.")
+  public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto requestDto) {
+    return authenticationService.authenticate(requestDto);
+  }
 }

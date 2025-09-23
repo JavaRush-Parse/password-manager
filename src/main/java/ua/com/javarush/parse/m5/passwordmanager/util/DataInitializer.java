@@ -10,22 +10,22 @@ import ua.com.javarush.parse.m5.passwordmanager.repository.user.RoleRepository;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-    private final RoleRepository roleRepository;
+  private final RoleRepository roleRepository;
 
-    @Override
-    public void run(String... args) throws Exception {
-        if (roleRepository.findByRole(Role.RoleName.USER).isEmpty()) {
-            System.out.println("Creating ROLE_USER...");
-            Role userRole = new Role();
-            userRole.setRole(Role.RoleName.USER);
-            roleRepository.save(userRole);
-        }
-
-        if (roleRepository.findByRole(Role.RoleName.ADMIN).isEmpty()) {
-            System.out.println("Creating ROLE_ADMIN...");
-            Role adminRole = new Role();
-            adminRole.setRole(Role.RoleName.ADMIN);
-            roleRepository.save(adminRole);
-        }
+  @Override
+  public void run(String... args) throws Exception {
+    if (roleRepository.findByRole(Role.RoleName.USER).isEmpty()) {
+      System.out.println("Creating ROLE_USER...");
+      Role userRole = new Role();
+      userRole.setRole(Role.RoleName.USER);
+      roleRepository.save(userRole);
     }
+
+    if (roleRepository.findByRole(Role.RoleName.ADMIN).isEmpty()) {
+      System.out.println("Creating ROLE_ADMIN...");
+      Role adminRole = new Role();
+      adminRole.setRole(Role.RoleName.ADMIN);
+      roleRepository.save(adminRole);
+    }
+  }
 }

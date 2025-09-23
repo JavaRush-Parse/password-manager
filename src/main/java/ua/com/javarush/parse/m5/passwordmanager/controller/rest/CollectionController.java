@@ -1,15 +1,16 @@
 package ua.com.javarush.parse.m5.passwordmanager.controller.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.com.javarush.parse.m5.passwordmanager.dto.ErrorResponse;
 import ua.com.javarush.parse.m5.passwordmanager.entity.Collection;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 
+@Tag(name = "Collection Management", description = "API for managing user's password collections")
 @RestController
 @RequestMapping("/api/v1/collections")
 @RequiredArgsConstructor
@@ -18,42 +19,41 @@ public class CollectionController {
   private final CollectionService collectionService;
 
   @PostMapping("/create")
-  public ResponseEntity<Collection> save(@RequestBody Collection collection) {
-    Collection saved = collectionService.save(collection);
-    return new ResponseEntity<>(saved, HttpStatus.CREATED);
+  @ResponseStatus(HttpStatus.CREATED)
+  @Operation(summary = "Create a new collection")
+  public Collection create(@RequestBody Collection collection) {
+    return collectionService.save(collection);
   }
 
   @GetMapping("/all")
-  public ResponseEntity<List<Collection>> getAll() {
-    return new ResponseEntity<>(collectionService.findAll(), HttpStatus.OK);
+  @Operation(summary = "Get all collections")
+  public List<Collection> getAll() {
+    return collectionService.findAll();
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> findById(@PathVariable Long id) {
-    Optional<Collection> collection = collectionService.findById(id);
-    if (collection.isPresent()) {
-      return ResponseEntity.ok(collection.get());
-    } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(ErrorResponse.of("Collection with id '" + id + "' not found"));
-    }
+  @Operation(summary = "Get a collection by ID")
+  public ResponseEntity<Collection> findById(@PathVariable Long id) {
+    return collectionService
+        .findById(id)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> update(
-      @PathVariable Long id, @RequestBody Collection updatedCollectionData) {
-    Optional<Collection> updatedCollection = collectionService.update(id, updatedCollectionData);
-    if (updatedCollection.isPresent()) {
-      return ResponseEntity.ok(updatedCollection.get());
-    } else {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(ErrorResponse.of("Collection with id '" + id + "' not found"));
-    }
+  @Operation(summary = "Update an existing collection")
+  public ResponseEntity<Collection> update(
+      @PathVariable Long id, @RequestBody Collection updatedData) {
+    return collectionService
+        .update(id, updatedData)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @Operation(summary = "Delete a collection by ID")
+  public void delete(@PathVariable Long id) {
     collectionService.deleteById(id);
-    return ResponseEntity.ok().build();
   }
 }
