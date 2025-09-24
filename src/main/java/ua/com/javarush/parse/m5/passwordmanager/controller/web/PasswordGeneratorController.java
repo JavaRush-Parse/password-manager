@@ -10,12 +10,12 @@ import ua.com.javarush.parse.m5.passwordmanager.service.PasswordGeneratorService
 @RequiredArgsConstructor
 public class PasswordGeneratorController {
 
-    private final PasswordGeneratorService passwordGeneratorService;
+  private final PasswordGeneratorService passwordGeneratorService;
 
-    @GetMapping("/password/generate")
-    public String generatePassword(Model model) {
-        String generatedPassword = passwordGeneratorService.generateStrongPassword();
-        model.addAttribute("generatedPassword", generatedPassword);
-        return "fragments/password-input :: password-input";
-    }
+  @GetMapping("/password/generate")
+  public String generatePassword(Model model) {
+    String generatedPassword = passwordGeneratorService.generateStrongPassword();
+    model.addAttribute("generatedPassword", generatedPassword);
+    return "fragments/password-input :: password-input";
+  }
 }
