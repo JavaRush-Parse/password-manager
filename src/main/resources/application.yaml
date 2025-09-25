@@ -24,3 +24,6 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+jwt:
+  secret: aVeryLongAndSecureSecretKeyForMyPasswordManagerApplicationThatNobodyShouldGuess
+  expiration: 3600000

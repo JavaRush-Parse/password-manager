@@ -12,7 +12,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ua.com.javarush.parse.m5.passwordmanager.security.JwtUtil;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
 @WebMvcTest(HomeController.class)
@@ -25,6 +27,11 @@ class HomeControllerTest {
     public VaultItemService vaultItemService() {
       return mock(VaultItemService.class);
     }
+
+    @Bean
+    public JwtUtil jwtUtil() {
+      return mock(JwtUtil.class);
+    }
   }
 
   @Autowired private MockMvc mockMvc;
@@ -32,6 +39,7 @@ class HomeControllerTest {
   @Autowired private VaultItemService service;
 
   @Test
+  @WithMockUser
   void whenHome_thenReturnsHomeViewWithVaultItems() throws Exception {
     when(service.findAll()).thenReturn(List.of());
 

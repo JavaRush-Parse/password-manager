@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -15,8 +16,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.com.javarush.parse.m5.passwordmanager.entity.Collection;
+import ua.com.javarush.parse.m5.passwordmanager.security.JwtUtil;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 
 @WebMvcTest(CollectionControllerWeb.class)
@@ -29,6 +32,11 @@ class CollectionControllerWebTest {
     public CollectionService collectionService() {
       return mock(CollectionService.class);
     }
+
+    @Bean
+    public JwtUtil jwtUtil() {
+      return mock(JwtUtil.class);
+    }
   }
 
   @Autowired private MockMvc mockMvc;
@@ -36,6 +44,7 @@ class CollectionControllerWebTest {
   @Autowired private CollectionService collectionService;
 
   @Test
+  @WithMockUser
   void showCreateForm_shouldReturnCreateCollectionView() throws Exception {
     mockMvc
         .perform(get("/collections/create"))
@@ -45,6 +54,7 @@ class CollectionControllerWebTest {
   }
 
   @Test
+  @WithMockUser
   void save_shouldRedirectToHome() throws Exception {
     Collection collection = new Collection();
     collection.setName("Test Collection");
@@ -53,6 +63,7 @@ class CollectionControllerWebTest {
     mockMvc
         .perform(
             post("/collections/save")
+                .with(csrf())
                 .param("name", "Test Collection")
                 .param("description", "Test Description")
                 .param("color", "#FFFFFF")
@@ -62,6 +73,7 @@ class CollectionControllerWebTest {
   }
 
   @Test
+  @WithMockUser
   void showEditForm_shouldReturnEditCollectionView() throws Exception {
     Collection existingCollection = new Collection();
     existingCollection.setId(1L);
@@ -88,6 +100,7 @@ class CollectionControllerWebTest {
   }
 
   @Test
+  @WithMockUser
   void showEditForm_shouldRedirectToHomeIfNotFound() throws Exception {
     when(collectionService.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -98,6 +111,7 @@ class CollectionControllerWebTest {
   }
 
   @Test
+  @WithMockUser
   void update_shouldRedirectToCollections() throws Exception {
     Collection updatedCollection = new Collection();
     updatedCollection.setId(1L);
@@ -108,6 +122,7 @@ class CollectionControllerWebTest {
     mockMvc
         .perform(
             post("/collections/update/1")
+                .with(csrf())
                 .param("id", "1")
                 .param("name", "Updated Collection")
                 .param("description", "Updated Description")
@@ -118,9 +133,10 @@ class CollectionControllerWebTest {
   }
 
   @Test
+  @WithMockUser
   void delete_shouldRedirectToCollections() throws Exception {
     mockMvc
-        .perform(post("/collections/delete/1"))
+        .perform(post("/collections/delete/1").with(csrf()))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/collections"));
   }

@@ -2,6 +2,7 @@ package ua.com.javarush.parse.m5.passwordmanager.controller.web;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -13,8 +14,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
+import ua.com.javarush.parse.m5.passwordmanager.security.JwtUtil;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
@@ -33,6 +36,11 @@ class VaultControllerWebTest {
     public CollectionService collectionService() {
       return mock(CollectionService.class);
     }
+
+    @Bean
+    public JwtUtil jwtUtil() {
+      return mock(JwtUtil.class);
+    }
   }
 
   @Autowired private MockMvc mockMvc;
@@ -40,6 +48,7 @@ class VaultControllerWebTest {
   @Autowired private VaultItemService service;
 
   @Test
+  @WithMockUser
   void whenGetById_thenReturnsVaultView() throws Exception {
     VaultItem item = new VaultItem();
     item.setId(1L);
@@ -53,6 +62,7 @@ class VaultControllerWebTest {
   }
 
   @Test
+  @WithMockUser
   void whenShowCreateForm_thenReturnsCreateVaultView() throws Exception {
     mockMvc
         .perform(get("/vault-item/create"))
@@ -62,14 +72,16 @@ class VaultControllerWebTest {
   }
 
   @Test
+  @WithMockUser
   void whenSaveNewItem_thenRedirectsHome() throws Exception {
     mockMvc
-        .perform(post("/vault-item/save").flashAttr("vault", new VaultItem()))
+        .perform(post("/vault-item/save").with(csrf()).flashAttr("vault", new VaultItem()))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/"));
   }
 
   @Test
+  @WithMockUser
   void whenShowEditForm_thenReturnsEditVaultView() throws Exception {
     VaultItem item = new VaultItem();
     item.setId(1L);
@@ -83,9 +95,11 @@ class VaultControllerWebTest {
   }
 
   @Test
+  @WithMockUser
   void whenUpdateItem_thenRedirectsHome() throws Exception {
     mockMvc
-        .perform(post("/vault-item/update/{id}", 1L).flashAttr("vault", new VaultItem()))
+        .perform(
+            post("/vault-item/update/{id}", 1L).with(csrf()).flashAttr("vault", new VaultItem()))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/"));
   }

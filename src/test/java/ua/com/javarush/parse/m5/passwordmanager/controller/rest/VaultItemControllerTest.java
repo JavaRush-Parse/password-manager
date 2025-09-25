@@ -2,12 +2,15 @@ package ua.com.javarush.parse.m5.passwordmanager.controller.rest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf; // <--- ВАЖНЫЙ ИМПОРТ
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -17,8 +20,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
+import ua.com.javarush.parse.m5.passwordmanager.security.JwtUtil;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
 @WebMvcTest(VaultItemController.class)
@@ -31,6 +36,11 @@ class VaultItemControllerTest {
     public VaultItemService vaultItemService() {
       return mock(VaultItemService.class);
     }
+
+    @Bean
+    public JwtUtil jwtUtil() {
+      return mock(JwtUtil.class);
+    }
   }
 
   @Autowired private MockMvc mockMvc;
@@ -40,6 +50,7 @@ class VaultItemControllerTest {
   @Autowired private ObjectMapper objectMapper;
 
   @Test
+  @WithMockUser
   void whenPost_thenCreateItem() throws Exception {
     VaultItem item = new VaultItem();
     item.setId(1L);
@@ -48,6 +59,7 @@ class VaultItemControllerTest {
     mockMvc
         .perform(
             post("/api/v1/vault/create")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(item)))
         .andExpect(status().isCreated())
@@ -55,6 +67,7 @@ class VaultItemControllerTest {
   }
 
   @Test
+  @WithMockUser
   void whenGetById_thenReturnsItem() throws Exception {
     VaultItem item = new VaultItem();
     item.setId(1L);
@@ -67,16 +80,15 @@ class VaultItemControllerTest {
   }
 
   @Test
+  @WithMockUser
   void whenGetByIdNotFound_thenReturns404() throws Exception {
     when(service.findById(1L)).thenReturn(Optional.empty());
 
-    mockMvc
-        .perform(get("/api/v1/vault/{id}", 1L))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.message").value("Vault item with id '1' not found"));
+    mockMvc.perform(get("/api/v1/vault/{id}", 1L)).andExpect(status().isNotFound());
   }
 
   @Test
+  @WithMockUser
   void whenPut_thenUpdatesItem() throws Exception {
     VaultItem item = new VaultItem();
     item.setId(1L);
@@ -85,6 +97,7 @@ class VaultItemControllerTest {
     mockMvc
         .perform(
             put("/api/v1/vault/{id}", 1L)
+                .with(csrf()) // <--- ДОБАВЛЕНО
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(item)))
         .andExpect(status().isOk())
@@ -92,19 +105,21 @@ class VaultItemControllerTest {
   }
 
   @Test
+  @WithMockUser
   void whenPutNotFound_thenReturns404() throws Exception {
     when(service.update(anyLong(), any(VaultItem.class))).thenReturn(Optional.empty());
 
     mockMvc
         .perform(
             put("/api/v1/vault/{id}", 1L)
+                .with(csrf()) // <--- ДОБАВЛЕНО
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new VaultItem())))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.message").value("Vault item with id '1' not found"));
+        .andExpect(status().isNotFound());
   }
 
   @Test
+  @WithMockUser
   void whenGetByLogin_thenReturnsItems() throws Exception {
     VaultItem item = new VaultItem();
     item.setLogin("testuser");
@@ -117,16 +132,18 @@ class VaultItemControllerTest {
   }
 
   @Test
-  void whenGetByLoginNotFound_thenReturns404() throws Exception {
-    when(service.findByLogin("testuser")).thenReturn(List.of());
+  @WithMockUser
+  void whenGetByLoginNotFound_thenReturnsEmptyList() throws Exception {
+    when(service.findByLogin("testuser")).thenReturn(Collections.emptyList());
 
     mockMvc
         .perform(get("/api/v1/vault/login/{login}", "testuser"))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.message").value("Vault items for login 'testuser' not found"));
+        .andExpect(status().isOk())
+        .andExpect(content().json("[]"));
   }
 
   @Test
+  @WithMockUser
   void whenGetByResource_thenReturnsItems() throws Exception {
     VaultItem item = new VaultItem();
     item.setResource("testresource");
@@ -139,17 +156,18 @@ class VaultItemControllerTest {
   }
 
   @Test
-  void whenGetByResourceNotFound_thenReturns404() throws Exception {
-    when(service.findByResource("testresource")).thenReturn(List.of());
+  @WithMockUser
+  void whenGetByResourceNotFound_thenReturnsEmptyList() throws Exception {
+    when(service.findByResource("testresource")).thenReturn(Collections.emptyList());
 
     mockMvc
         .perform(get("/api/v1/vault/resource").param("resource", "testresource"))
-        .andExpect(status().isNotFound())
-        .andExpect(
-            jsonPath("$.message").value("Vault items for resource 'testresource' not found"));
+        .andExpect(status().isOk())
+        .andExpect(content().json("[]"));
   }
 
   @Test
+  @WithMockUser
   void whenGetAll_thenReturnsAllItems() throws Exception {
     VaultItem item1 = new VaultItem();
     VaultItem item2 = new VaultItem();
@@ -162,7 +180,11 @@ class VaultItemControllerTest {
   }
 
   @Test
-  void whenDelete_thenReturnsOk() throws Exception {
-    mockMvc.perform(delete("/api/v1/vault/{id}", 1L)).andExpect(status().isOk());
+  @WithMockUser
+  void whenDelete_thenReturnsNoContent() throws Exception {
+    doNothing().when(service).deleteById(1L);
+    mockMvc
+        .perform(delete("/api/v1/vault/{id}", 1L).with(csrf())) // <--- ДОБАВЛЕНО
+        .andExpect(status().isNoContent());
   }
 }

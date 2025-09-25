@@ -6,6 +6,7 @@
 # @name createCollection
 POST {{host}}/{{api.path}}/{{api.version}}/collections/create
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 {
   "name": "Social Media",
@@ -17,15 +18,18 @@ Content-Type: application/json
 ### Get all collections
 # @name getAllCollections
 GET {{host}}/{{api.path}}/{{api.version}}/collections/all
+Authorization: Bearer {{auth_token}}
 
 ### Get collection by ID
 # @name getCollectionById
 GET {{host}}/{{api.path}}/{{api.version}}/collections/1
+Authorization: Bearer {{auth_token}}
 
 ### Update a collection
 # @name updateCollection
 PUT {{host}}/{{api.path}}/{{api.version}}/collections/1
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 {
   "name": "Social Networks",
@@ -37,3 +41,4 @@ Content-Type: application/json
 ### Delete a collection
 # @name deleteCollection
 DELETE {{host}}/{{api.path}}/{{api.version}}/collections/1
+Authorization: Bearer {{auth_token}}

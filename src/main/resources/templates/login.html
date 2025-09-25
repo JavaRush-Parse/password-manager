@@ -19,9 +19,10 @@
                 </div>
 
                 <form th:action="@{/login}" method="post" class="space-y-4">
+                    <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <div>
-                        <label for="username" class="form-label">Username</label>
-                        <input id="username" name="username" type="text" required autocomplete="username"
+                        <label for="username" class="form-label">Email</label>
+                        <input id="username" name="username" type="email" required autocomplete="username"
                                class="form-input" />
                     </div>
                     <div>
