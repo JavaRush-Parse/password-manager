@@ -30,7 +30,7 @@ public class UserService {
     User user = userMapper.toModel(requestDto);
     user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
-    user.setUserName(requestDto.getUserName());
+    user.setUserName(requestDto.getUsername());
     user.setEmail(requestDto.getEmail());
 
     Role userRole =

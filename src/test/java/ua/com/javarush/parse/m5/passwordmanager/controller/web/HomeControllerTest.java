@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,6 +20,7 @@ import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
 @WebMvcTest(HomeController.class)
 @Import(HomeControllerTest.TestConfig.class)
+@DisplayName("HomeController Tests")
 class HomeControllerTest {
 
   @TestConfiguration
@@ -40,6 +42,7 @@ class HomeControllerTest {
 
   @Test
   @WithMockUser
+  @DisplayName("Get home page with vault items")
   void whenHome_thenReturnsHomeViewWithVaultItems() throws Exception {
     when(service.findAll()).thenReturn(List.of());
 

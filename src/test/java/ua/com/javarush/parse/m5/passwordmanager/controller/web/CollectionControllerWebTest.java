@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,6 +25,7 @@ import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 
 @WebMvcTest(CollectionControllerWeb.class)
 @Import(CollectionControllerWebTest.TestConfig.class)
+@DisplayName("CollectionControllerWeb Tests")
 class CollectionControllerWebTest {
 
   @TestConfiguration
@@ -45,6 +47,7 @@ class CollectionControllerWebTest {
 
   @Test
   @WithMockUser
+  @DisplayName("Show create collection form")
   void showCreateForm_shouldReturnCreateCollectionView() throws Exception {
     mockMvc
         .perform(get("/collections/create"))
@@ -55,6 +58,7 @@ class CollectionControllerWebTest {
 
   @Test
   @WithMockUser
+  @DisplayName("Save new collection and redirect to home")
   void save_shouldRedirectToHome() throws Exception {
     Collection collection = new Collection();
     collection.setName("Test Collection");
@@ -74,6 +78,7 @@ class CollectionControllerWebTest {
 
   @Test
   @WithMockUser
+  @DisplayName("Show edit collection form")
   void showEditForm_shouldReturnEditCollectionView() throws Exception {
     Collection existingCollection = new Collection();
     existingCollection.setId(1L);
@@ -101,6 +106,7 @@ class CollectionControllerWebTest {
 
   @Test
   @WithMockUser
+  @DisplayName("Show edit collection form - Not Found")
   void showEditForm_shouldRedirectToHomeIfNotFound() throws Exception {
     when(collectionService.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -112,6 +118,7 @@ class CollectionControllerWebTest {
 
   @Test
   @WithMockUser
+  @DisplayName("Update existing collection and redirect")
   void update_shouldRedirectToCollections() throws Exception {
     Collection updatedCollection = new Collection();
     updatedCollection.setId(1L);
@@ -134,6 +141,7 @@ class CollectionControllerWebTest {
 
   @Test
   @WithMockUser
+  @DisplayName("Delete collection and redirect")
   void delete_shouldRedirectToCollections() throws Exception {
     mockMvc
         .perform(post("/collections/delete/1").with(csrf()))
