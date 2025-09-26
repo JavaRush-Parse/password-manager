@@ -20,10 +20,24 @@
             <input type="text" th:field="*{login}" placeholder="Please, enter your login"
                    class="form-input" required/>
         </div>
+
         <div>
-            <label class="form-label">Password<span class="text-red-600">*</span></label>
-            <input type="password" th:field="*{password}"
-                   class="form-input" required/>
+            <label for="password" class="form-label">Password<span class="text-red-600">*</span></label>
+
+            <div id="password-wrapper">
+                <input type="password" id="password" name="password" th:value="*{password}"
+                       class="form-input" required/>
+            </div>
+
+            <div class="flex justify-start gap-3 pt-2">
+                <button type="button"
+                        hx-get="/password/generate"
+                        hx-target="#password-wrapper"
+                        hx-swap="innerHTML"
+                        class="btn-secondary">
+                    Generate
+                </button>
+            </div>
         </div>
         <div>
             <label for="collection" class="form-label">Collection</label>
