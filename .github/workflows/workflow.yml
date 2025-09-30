@@ -54,8 +54,7 @@ jobs:
         run: mvn com.spotify.fmt:fmt-maven-plugin:2.25:check
 
   test:
-#    needs: [setup, fmt-check]
-    needs: [setup]
+    needs: [setup, fmt-check]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -99,6 +98,84 @@ jobs:
         with:
           report_paths: target/surefire-reports/*.xml
           check_name: JUnit Test Report
+
+  coverage:
+    needs: [setup, fmt-check]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Restore Maven cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.setup.outputs.cache_key }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Run tests with coverage
+        run: mvn clean test jacoco:report
+
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: |
+            ${{ github.workspace }}/target/site/jacoco/jacoco.xml,
+            ${{ github.workspace }}/**/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
+          title: Code Coverage Report
+          update-comment: true
+
+      - name: Generate Coverage Badge
+        id: coverage-badge
+        run: |
+          echo "coverage=${{ steps.jacoco.outputs.coverage-overall }}" >> $GITHUB_OUTPUT
+
+      - name: Fail PR if overall coverage is less than 80%
+        if: ${{ steps.jacoco.outputs.coverage-overall < 80.0 }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.setFailed('Overall coverage is less than 80%! Current coverage: ${{ steps.jacoco.outputs.coverage-overall }}%')
+
+      # Optional: Add coverage comment with details
+      - name: Add Coverage PR Comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const coverage = ${{ steps.jacoco.outputs.coverage-overall }};
+            const changedFilesCoverage = ${{ steps.jacoco.outputs.coverage-changed-files }};
+            const isPassing = coverage >= 80.0;
+            const emoji = isPassing ? '✅' : '❌';
+            
+            const comment = `## ${emoji} Coverage Report
+            
+            - **Overall Coverage**: ${coverage}% ${isPassing ? '(Passing)' : '(Failing - minimum 80% required)'}
+            - **Changed Files Coverage**: ${changedFilesCoverage}% ${changedFilesCoverage >= 60 ? '✓' : '✗ (minimum 60% required)'}
+            
+            ${!isPassing ? '⚠️ **This PR will be blocked until coverage reaches 80%**' : ''}`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
 
 #      - name: Codacy Coverage Reporter
 #        uses: codacy/codacy-coverage-reporter-action@v1.3.0
