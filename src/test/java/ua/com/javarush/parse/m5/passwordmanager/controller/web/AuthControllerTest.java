@@ -114,9 +114,7 @@ class AuthControllerTest {
       requestDto.setRepeatPassword("password123");
 
       when(bindingResult.hasErrors()).thenReturn(false);
-      doThrow(new RuntimeException("Email already exists"))
-          .when(userService)
-          .register(requestDto);
+      doThrow(new RuntimeException("Email already exists")).when(userService).register(requestDto);
 
       String result = authController.registerUser(requestDto, bindingResult);
 
@@ -184,9 +182,7 @@ class AuthControllerTest {
       requestDto.setRepeatPassword("password");
 
       when(bindingResult.hasErrors()).thenReturn(false);
-      doThrow(new RuntimeException("Database error"))
-          .when(userService)
-          .register(requestDto);
+      doThrow(new RuntimeException("Database error")).when(userService).register(requestDto);
 
       String result = authController.registerUser(requestDto, bindingResult);
 
