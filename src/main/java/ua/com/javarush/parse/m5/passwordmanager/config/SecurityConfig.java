@@ -1,5 +1,6 @@
 package ua.com.javarush.parse.m5.passwordmanager.config;
 
+import java.security.SecureRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -18,8 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import ua.com.javarush.parse.m5.passwordmanager.security.CustomAuthenticationEntryPoint;
 import ua.com.javarush.parse.m5.passwordmanager.security.JwtAuthenticationFilter;
 
-import java.security.SecureRandom;
-
 @EnableMethodSecurity
 @RequiredArgsConstructor
 @Configuration
@@ -29,7 +28,7 @@ public class SecurityConfig {
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
   private static final String[] SWAGGER_WHITELIST = {
-          "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**"
+    "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**"
   };
 
   @Bean
@@ -40,42 +39,43 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http.cors(AbstractHttpConfigurer::disable)
-            //        .csrf(Customizer.withDefaults())
-            .csrf(
-                    csrf ->
-                            csrf.ignoringRequestMatchers("/api/**").ignoringRequestMatchers(SWAGGER_WHITELIST))
-            .authorizeHttpRequests(
-                    auth ->
-                            auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-                                    .permitAll() // Публичные страницы
-                                    .requestMatchers("/api/v1/auth/**")
-                                    .permitAll() // Статика (CSS, JS)
-                                    .requestMatchers("/", "/login", "/register", "/error", "/main.css", "/img/**")
-                                    .permitAll() // API для регистрации/входа
-                                    .requestMatchers(SWAGGER_WHITELIST)
-                                    .permitAll()
-                                    .anyRequest()
-                                    .authenticated())
-            .exceptionHandling(
-                    e ->
-                            e.defaultAuthenticationEntryPointFor(
-                                    customAuthenticationEntryPoint,
-                                    request -> request.getServletPath().startsWith("/api/")))
-            .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/", true).permitAll())
-            .logout(logout -> logout.logoutSuccessUrl("/").permitAll())
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .sessionManagement(
-                    session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-            .userDetailsService(userDetailsService)
-            .build();
+        //        .csrf(Customizer.withDefaults())
+        .csrf(
+            csrf ->
+                csrf.ignoringRequestMatchers("/api/**").ignoringRequestMatchers(SWAGGER_WHITELIST))
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                    .permitAll() // Публичные страницы
+                    .requestMatchers("/api/v1/auth/**")
+                    .permitAll() // Статика (CSS, JS)
+                    .requestMatchers("/", "/login", "/register", "/error", "/main.css", "/img/**")
+                    .permitAll() // API для регистрации/входа
+                    .requestMatchers(SWAGGER_WHITELIST)
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .exceptionHandling(
+            e ->
+                e.defaultAuthenticationEntryPointFor(
+                    customAuthenticationEntryPoint,
+                    request -> request.getServletPath().startsWith("/api/")))
+        .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/", true).permitAll())
+        .logout(logout -> logout.logoutSuccessUrl("/").permitAll())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+        .userDetailsService(userDetailsService)
+        .build();
   }
 
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-          throws Exception {
+      throws Exception {
     return config.getAuthenticationManager();
   }
 
+  @Bean
   public SecureRandom secureRandom() {
     return new SecureRandom();
   }
