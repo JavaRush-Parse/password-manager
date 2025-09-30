@@ -27,3 +27,10 @@ spring:
 jwt:
   secret: aVeryLongAndSecureSecretKeyForMyPasswordManagerApplicationThatNobodyShouldGuess
   expiration: 3600000
+
+password-generator:
+  length: 16
+  lowercase-chars: "abcdefghijklmnopqrstuvwxyz"
+  uppercase-chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  numbers: "0123456789"
+  symbols: "!@#$%^&*()-_=+<>?"

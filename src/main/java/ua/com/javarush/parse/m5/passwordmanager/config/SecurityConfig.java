@@ -1,5 +1,6 @@
 package ua.com.javarush.parse.m5.passwordmanager.config;
 
+import java.security.SecureRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -72,5 +73,10 @@ public class SecurityConfig {
   public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
       throws Exception {
     return config.getAuthenticationManager();
+  }
+
+  @Bean
+  public SecureRandom secureRandom() {
+    return new SecureRandom();
   }
 }
