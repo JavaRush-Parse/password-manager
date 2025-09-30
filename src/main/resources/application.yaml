@@ -24,3 +24,10 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+
+password-generator:
+  length: 16
+  lowercase-chars: "abcdefghijklmnopqrstuvwxyz"
+  uppercase-chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  numbers: "0123456789"
+  symbols: "!@#$%^&*()-_=+<>?"

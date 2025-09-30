@@ -4,32 +4,37 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ua.com.javarush.parse.m5.passwordmanager.config.PasswordGeneratorProperties;
 
 @Service
+@RequiredArgsConstructor
 public class PasswordGeneratorService {
 
-  private static final String LOWERCASE_CHARS = "abcdefghijklmnopqrstuvwxyz";
-  private static final String UPPERCASE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  private static final String NUMBERS = "0123456789";
-  private static final String SYMBOLS = "!@#$%^&*()-_=+<>?";
-  private static final String ALL_CHARS = LOWERCASE_CHARS + UPPERCASE_CHARS + NUMBERS + SYMBOLS;
-  private static final SecureRandom random = new SecureRandom();
+  private final PasswordGeneratorProperties properties;
+  private final SecureRandom secureRandom;
 
   public String generateStrongPassword() {
-    final int length = 16;
+    final int length = properties.getLength();
+    final String lowercaseChars = properties.getLowercaseChars();
+    final String uppercaseChars = properties.getUppercaseChars();
+    final String numbers = properties.getNumbers();
+    final String symbols = properties.getSymbols();
+    final String allChars = lowercaseChars + uppercaseChars + numbers + symbols;
+
     List<Character> passwordChars = new ArrayList<>();
 
-    passwordChars.add(LOWERCASE_CHARS.charAt(random.nextInt(LOWERCASE_CHARS.length())));
-    passwordChars.add(UPPERCASE_CHARS.charAt(random.nextInt(UPPERCASE_CHARS.length())));
-    passwordChars.add(NUMBERS.charAt(random.nextInt(NUMBERS.length())));
-    passwordChars.add(SYMBOLS.charAt(random.nextInt(SYMBOLS.length())));
+    passwordChars.add(lowercaseChars.charAt(secureRandom.nextInt(lowercaseChars.length())));
+    passwordChars.add(uppercaseChars.charAt(secureRandom.nextInt(uppercaseChars.length())));
+    passwordChars.add(numbers.charAt(secureRandom.nextInt(numbers.length())));
+    passwordChars.add(symbols.charAt(secureRandom.nextInt(symbols.length())));
 
     for (int i = 4; i < length; i++) {
-      passwordChars.add(ALL_CHARS.charAt(random.nextInt(ALL_CHARS.length())));
+      passwordChars.add(allChars.charAt(secureRandom.nextInt(allChars.length())));
     }
 
-    Collections.shuffle(passwordChars);
+    Collections.shuffle(passwordChars, secureRandom);
 
     StringBuilder password = new StringBuilder(length);
     for (Character ch : passwordChars) {
