@@ -9,52 +9,29 @@ env:
   JAVA_VERSION: '21'
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      cache_key: ${{ steps.generate_key.outputs.cache_key }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: ${{ env.JAVA_VERSION }}
-
-      - name: Generate cache key
-        id: generate_key
-        # use GITHUB_OUTPUT to set a step output named "cache_key"
-        run: echo "cache_key=${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}" >> $GITHUB_OUTPUT
-
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ steps.generate_key.outputs.cache_key }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
   fmt-check:
-    needs: setup
     runs-on: ubuntu-latest
-    name: Verify code formatting
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v3
+      - name: Set up JDK ${{ env.JAVA_VERSION }} with Maven cache
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
+          cache: maven            # auto restore/save
+          cache-dependency-path: |
+            **/pom.xml
+            **/.mvn/wrapper/maven-wrapper.properties
+
+      # Optional: prefetch deps to warm cache on cold runs
+      - name: Go offline (warm cache)
+        run: mvn -B -q -DskipTests dependency:go-offline
 
       - name: Format check
-        run: mvn com.spotify.fmt:fmt-maven-plugin:2.25:check
+        run: mvn -B com.spotify.fmt:fmt-maven-plugin:2.25:check
 
   test:
-    needs: [setup, fmt-check]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -62,22 +39,17 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v3
+      - name: Set up JDK ${{ env.JAVA_VERSION }} with Maven cache
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
-
-      - name: Restore Maven cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ needs.setup.outputs.cache_key }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          cache: maven
+          cache-dependency-path: |
+            **/pom.xml
+            **/.mvn/wrapper/maven-wrapper.properties
 
       - name: Run tests with coverage
         run: mvn --batch-mode --update-snapshots test jacoco:report
@@ -91,12 +63,11 @@ jobs:
 
       - name: JUnit Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4
         with:
           report_paths: target/surefire-reports/*.xml
           check_name: JUnit Test Report
 
-      # Coverage reporting for PRs
       - name: Add coverage to PR
         if: github.event_name == 'pull_request'
         id: jacoco
@@ -113,29 +84,28 @@ jobs:
 
       - name: Fail PR if overall coverage is less than 80%
         if: ${{ github.event_name == 'pull_request' && steps.jacoco.outputs.coverage-overall < 80.0 }}
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
-            core.setFailed('Overall coverage is less than 80%! Current coverage: ${{ steps.jacoco.outputs.coverage-overall }}%')
+            core.setFailed(`Overall coverage is less than 80%! Current coverage: ${process.env.COVERAGE}%`)
+        env:
+          COVERAGE: ${{ steps.jacoco.outputs.coverage-overall }}
 
-      # Optional: Add coverage comment with details
       - name: Add Coverage PR Comment
         if: ${{ github.event_name == 'pull_request' && steps.jacoco.outputs.coverage-overall != '' }}
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
-            const coverage = ${{ steps.jacoco.outputs.coverage-overall }};
-            const changedFilesCoverage = ${{ steps.jacoco.outputs.coverage-changed-files }};
+            const coverage = parseFloat('${{ steps.jacoco.outputs.coverage-overall }}');
+            const changed = parseFloat('${{ steps.jacoco.outputs.coverage-changed-files }}');
             const isPassing = coverage >= 80.0;
             const emoji = isPassing ? '✅' : '❌';
-            
             const comment = `## ${emoji} Coverage Report
-            
+
             - **Overall Coverage**: ${coverage}% ${isPassing ? '(Passing)' : '(Failing - minimum 80% required)'}
-            - **Changed Files Coverage**: ${changedFilesCoverage}% ${changedFilesCoverage >= 60 ? '✓' : '✗ (minimum 60% required)'}
-            
+            - **Changed Files Coverage**: ${changed}% ${changed >= 80 ? '✓' : '✗ (minimum 80% required)'}
+
             ${!isPassing ? '⚠️ **This PR will be blocked until coverage reaches 80%**' : ''}`;
-            
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
