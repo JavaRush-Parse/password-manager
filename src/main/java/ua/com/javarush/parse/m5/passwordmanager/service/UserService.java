@@ -22,7 +22,7 @@ public class UserService {
   private final UserMapper userMapper;
 
   @Transactional
-  public UserResponseDto register(UserRegistrationRequestDto requestDto) {
+  public UserResponseDto register(UserRegistrationRequestDto requestDto) throws RuntimeException {
     if (userRepository.existsByEmail(requestDto.getEmail())) {
       throw new RuntimeException("User with this email already exists");
     }
@@ -30,7 +30,7 @@ public class UserService {
     User user = userMapper.toModel(requestDto);
     user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
-    user.setUserName(requestDto.getUsername());
+    user.setUserName(requestDto.getUserName());
     user.setEmail(requestDto.getEmail());
 
     Role userRole =

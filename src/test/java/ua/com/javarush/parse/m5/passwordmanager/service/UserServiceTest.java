@@ -43,13 +43,13 @@ class UserServiceTest {
     UserRegistrationRequestDto requestDto = new UserRegistrationRequestDto();
     requestDto.setEmail("test@example.com");
     requestDto.setPassword("password");
-    requestDto.setUsername("testuser");
+    requestDto.setUserName("testuser");
 
     when(userRepository.existsByEmail(requestDto.getEmail())).thenReturn(false);
 
     User user = new User();
     user.setEmail(requestDto.getEmail());
-    user.setUserName(requestDto.getUsername());
+    user.setUserName(requestDto.getUserName());
     when(userMapper.toModel(requestDto)).thenReturn(user);
 
     when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword");
@@ -61,14 +61,14 @@ class UserServiceTest {
     User savedUser = new User();
     savedUser.setId(1L);
     savedUser.setEmail(requestDto.getEmail());
-    savedUser.setUserName(requestDto.getUsername());
+    savedUser.setUserName(requestDto.getUserName());
     savedUser.setRoles(Set.of(userRole));
     when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
     UserResponseDto responseDto = new UserResponseDto();
     responseDto.setId(1L);
     responseDto.setEmail(requestDto.getEmail());
-    responseDto.setUsername(requestDto.getUsername());
+    responseDto.setUsername(requestDto.getUserName());
     when(userMapper.toDto(savedUser)).thenReturn(responseDto);
 
     // When
@@ -77,7 +77,7 @@ class UserServiceTest {
     // Then
     assertThat(result).isNotNull();
     assertThat(result.getEmail()).isEqualTo(requestDto.getEmail());
-    assertThat(result.getUsername()).isEqualTo(requestDto.getUsername());
+    assertThat(result.getUsername()).isEqualTo(requestDto.getUserName());
   }
 
   @Test
