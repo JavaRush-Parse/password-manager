@@ -79,11 +79,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Run tests
-        run: mvn --batch-mode --update-snapshots test
-
-      - name: Generate JaCoCo report
-        run: mvn jacoco:report
+      - name: Run tests with coverage
+        run: mvn --batch-mode --update-snapshots test jacoco:report
 
       - name: Publish unit test results
         if: always()
@@ -99,35 +96,9 @@ jobs:
           report_paths: target/surefire-reports/*.xml
           check_name: JUnit Test Report
 
-  coverage:
-    needs: [setup, fmt-check]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    permissions:
-      pull-requests: write
-      checks: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: ${{ env.JAVA_VERSION }}
-
-      - name: Restore Maven cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ needs.setup.outputs.cache_key }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Run tests with coverage
-        run: mvn clean test jacoco:report
-
+      # Coverage reporting for PRs
       - name: Add coverage to PR
+        if: github.event_name == 'pull_request'
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.2
         with:
@@ -135,18 +106,13 @@ jobs:
             ${{ github.workspace }}/target/site/jacoco/jacoco.xml,
             ${{ github.workspace }}/**/target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 40
-          min-coverage-changed-files: 60
+          min-coverage-overall: 80
+          min-coverage-changed-files: 80
           title: Code Coverage Report
           update-comment: true
 
-      - name: Generate Coverage Badge
-        id: coverage-badge
-        run: |
-          echo "coverage=${{ steps.jacoco.outputs.coverage-overall }}" >> $GITHUB_OUTPUT
-
       - name: Fail PR if overall coverage is less than 80%
-        if: ${{ steps.jacoco.outputs.coverage-overall < 80.0 }}
+        if: ${{ github.event_name == 'pull_request' && steps.jacoco.outputs.coverage-overall < 80.0 }}
         uses: actions/github-script@v6
         with:
           script: |
@@ -154,7 +120,7 @@ jobs:
 
       # Optional: Add coverage comment with details
       - name: Add Coverage PR Comment
-        if: github.event_name == 'pull_request'
+        if: ${{ github.event_name == 'pull_request' && steps.jacoco.outputs.coverage-overall != '' }}
         uses: actions/github-script@v6
         with:
           script: |
@@ -176,9 +142,3 @@ jobs:
               repo: context.repo.repo,
               body: comment
             });
-
-#      - name: Codacy Coverage Reporter
-#        uses: codacy/codacy-coverage-reporter-action@v1.3.0
-#        with:
-#          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-#          coverage-reports: target/site/jacoco/jacoco.xml
