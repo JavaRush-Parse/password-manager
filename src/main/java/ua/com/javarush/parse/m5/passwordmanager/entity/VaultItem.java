@@ -3,10 +3,7 @@ package ua.com.javarush.parse.m5.passwordmanager.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.SoftDelete;
 
 @Entity
@@ -15,6 +12,7 @@ import org.hibernate.annotations.SoftDelete;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class VaultItem {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

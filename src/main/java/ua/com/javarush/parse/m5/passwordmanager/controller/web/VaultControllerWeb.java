@@ -22,7 +22,7 @@ public class VaultControllerWeb {
   private final VaultItemService vaultItemService;
   private final CollectionService collectionService;
 
-  @GetMapping("/{id}")
+  @GetMapping("/{id:[0-9]+}")
   public String get(@PathVariable Long id, Model model) {
     Optional<VaultItem> byId = vaultItemService.findById(id);
     byId.ifPresent(

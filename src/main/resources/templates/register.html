@@ -18,23 +18,26 @@
                     You have been logged out.
                 </div>
 
-                <form th:action="@{/register}" method="post" class="space-y-4">
+                <form th:action="@{/register}" th:object="${user}" method="post" class="space-y-4">
+                    <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <div>
-                        <label for="username" class="form-label">Username</label>
-                        <input id="username" name="username" type="text" required autocomplete="username"
-                               class="form-input" />
+                        <label for="userName" class="form-label">Username</label>
+                        <input id="userName" type="text" th:field="*{userName}" required class="form-input" />
                     </div>
 
                     <div>
                         <label for="email" class="form-label">Email</label>
-                        <input id="email" name="email" type="email" required autocomplete="email"
-                               class="form-input" />
+                        <input id="email" type="email" th:field="*{email}" required class="form-input" />
                     </div>
 
                     <div>
                         <label for="password" class="form-label">Password</label>
-                        <input id="password" name="password" type="password" required autocomplete="current-password"
-                               class="form-input" />
+                        <input id="password" type="password" th:field="*{password}" required class="form-input" />
+                    </div>
+
+                    <div>
+                        <label for="repeatPassword" class="form-label">Repeat Password</label>
+                        <input id="repeatPassword" type="password" th:field="*{repeatPassword}" required class="form-input" />
                     </div>
 
                     <button type="submit"

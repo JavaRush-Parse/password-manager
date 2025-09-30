@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <header class="bg-white mb-10" th:fragment="header">
     <div class="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
@@ -16,6 +17,10 @@
                     </li>
 
                     <li>
+                        <a class="text-gray-500 transition hover:text-gray-500/75" th:href="@{/swagger-ui.html}">API</a>
+                    </li>
+
+                    <li>
                         <a class="text-gray-500 transition hover:text-gray-500/75" href="#"> Authors </a>
                     </li>
 
@@ -26,32 +31,20 @@
                 </ul>
             </nav>
 
-            <div class="flex items-center gap-4">
-                <div class="sm:flex sm:gap-4">
+             <div class="flex items-center gap-4">
                     <div class="sm:flex sm:gap-4">
-                        <a
-                                class="btn-primary"
-                                th:href="@{/login}"
-                        >Login
-                        </a>
+                        <div sec:authorize="!isAuthenticated()" class="sm:flex sm:gap-4">
+                            <a class="btn-primary" th:href="@{/login}">Login</a>
+                            <a class="btn-secondary hidden sm:block" th:href="@{/register}">Register</a>
+                        </div>
 
-                        <!--                        <form th:action="@{/logout}"-->
-                        <!--                              method="post">-->
-                        <!--                            <button type="submit"-->
-                        <!--                                    class="btn-primary">-->
-                        <!--                                Logout-->
-                        <!--                            </button>-->
-                        <!--                        </form>-->
+                        <div sec:authorize="isAuthenticated()" class="sm:flex sm:gap-4">
+                            <form th:action="@{/logout}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <button type="submit" class="btn-primary">Logout</button>
+                            </form>
+                        </div>
                     </div>
-
-                    <a
-                            class="btn-secondary hidden sm:block"
-                            th:href="@{/register}"
-                    >
-                        Register
-                    </a>
-                </div>
-
                 <button
                         class="block rounded-sm bg-gray-100 p-2.5 text-gray-600 transition hover:text-gray-600/75 md:hidden"
                 >

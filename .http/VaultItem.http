@@ -6,6 +6,7 @@
 # @name createVaultItem
 POST {{host}}/{{api.path}}/{{api.version}}/vault/create
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 {
   "name": "Gmail Account",
@@ -22,6 +23,7 @@ Content-Type: application/json
 # @name createVaultItemInCollection
 POST {{host}}/{{api.path}}/{{api.version}}/vault/create
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 {
   "name": "Facebook Account",
@@ -38,6 +40,7 @@ Content-Type: application/json
 ###
 POST {{host}}/{{api.path}}/{{api.version}}/vault/import
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 [
   {
@@ -64,30 +67,37 @@ Content-Type: application/json
 
 ###
 GET {{host}}/{{api.path}}/{{api.version}}/vault/all
+Authorization: Bearer {{auth_token}}
 
 ### Get all vault items
 # @name getAllVaultItems
 GET {{host}}/{{api.path}}/{{api.version}}/vault/all
+Authorization: Bearer {{auth_token}}
 
 ### Get vault item by ID
 # @name getVaultItemById
 GET {{host}}/{{api.path}}/{{api.version}}/vault/1
+Authorization: Bearer {{auth_token}}
 
 ### Find by login
 # @name findVaultItemByLogin
 GET {{host}}/{{api.path}}/{{api.version}}/vault/login/my.email@gmail.com
+Authorization: Bearer {{auth_token}}
 
 ### Find by resource
 # @name findVaultItemByResource
 GET {{host}}/{{api.path}}/{{api.version}}/vault/resource?resource=https://mail.google.com
+Authorization: Bearer {{auth_token}}
 
 ###Find by collection
 GET {{host}}/{{api.path}}/{{api.version}}/vault/collection/Social Media
+Authorization: Bearer {{auth_token}}
 
 ### Update a vault item
 # @name updateVaultItem
 PUT {{host}}/{{api.path}}/{{api.version}}/vault/1
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 {
   "name": "Google Account",
@@ -103,3 +113,4 @@ Content-Type: application/json
 ### Delete a vault item
 # @name deleteVaultItem
 DELETE {{host}}/{{api.path}}/{{api.version}}/vault/1
+Authorization: Bearer {{auth_token}}
