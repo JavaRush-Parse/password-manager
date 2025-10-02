@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ua.com.javarush.parse.m5.passwordmanager.config.RedirectConstants;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
@@ -65,29 +66,45 @@ public class VaultControllerWeb {
   @PostMapping("/save")
   public String saveNewItem(@ModelAttribute("vault") VaultItem item) {
     vaultItemService.save(item);
-    return "redirect:/";
+    return RedirectConstants.REDIRECT_HOME;
   }
 
+  @HxRequest
   @GetMapping("/edit/{id}")
   public String showEditForm(@PathVariable Long id, Model model) {
     Optional<VaultItem> byId = vaultItemService.findById(id);
     if (byId.isPresent()) {
       model.addAttribute("vault", byId.get());
       model.addAttribute("collections", collectionService.findAll());
-      return "edit-vault";
+      return "edit-vault :: modal";
     }
-    return "redirect:/";
+    return RedirectConstants.REDIRECT_HOME;
   }
 
   @PostMapping("/update/{id}")
   public String updateItem(@PathVariable Long id, @ModelAttribute("vault") VaultItem itemFromForm) {
     vaultItemService.update(id, itemFromForm);
-    return "redirect:/";
+    return RedirectConstants.REDIRECT_HOME;
+  }
+
+  @HxRequest
+  @PostMapping(value = "/update/{id}", headers = "HX-Request=true")
+  @ResponseBody
+  @HxTrigger("refreshVaultTable")
+  public String updateItemHTMX(@PathVariable Long id, @ModelAttribute("vault") VaultItem itemFromForm, HttpServletResponse response) {
+    try {
+      vaultItemService.update(id, itemFromForm);
+      return "";
+    } catch (Exception e) {
+      log.error("Error updating vault item", e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      return "Error updating item: " + e.getMessage();
+    }
   }
 
   @DeleteMapping("/delete/{id}")
   public String deleteItem(@PathVariable Long id) {
     vaultItemService.deleteById(id);
-    return "redirect:/";
+    return RedirectConstants.REDIRECT_HOME;
   }
 }

@@ -1,17 +1,11 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}"
->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <body>
-<main class="main-content-area-s" layout:fragment="content">
-    <h1 class="mt-8 mb-6 text-2xl font-semibold text-stone-950">Edit Vault Item</h1>
+    <div th:fragment="modal" th:replace="~{component/modal :: modal(title='Edit Vault Item', form=~{:: form})}"></div>
 
-    <div class="container">
-
-        <form th:action="@{/vault-item/update/{id}(id=${vault.id})}" th:object="${vault}" method="post" class="space-y-5">
+    <th:block th:fragment="form">
+        <form hx:post="@{/vault-item/save}" hx-target="#modal-backdrop" hx-swap="outerHTML" th:object="${vault}" method="post" class="space-y-5">
 
             <input th:field="*{id}" type="hidden"/>
             <div>
@@ -62,8 +56,7 @@
                 </a>
             </div>
         </form>
-    </div>
-</main>
+    </th:block>
 </body>
 
 </html>
