@@ -22,7 +22,6 @@ spring:
         jdbc:
           time_zone: UTC
     show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
   mvc:
     hiddenmethod:
       filter:

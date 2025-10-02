@@ -35,8 +35,6 @@
                       class="inline-block ml-2"
                 onsubmit="return confirm('Are you sure you want to delete this item?');">
 
-                <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
                 <button type="submit"
                         class="inline-block rounded px-3 py-2 text-xm font-medium text-black
                        border-2 border-transparent transition-colors

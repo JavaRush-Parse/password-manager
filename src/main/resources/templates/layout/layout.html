@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Password Manager</title>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link rel="stylesheet" th:href="@{/main.css}">
     <script th:src="@{/webjars/htmx.org/2.0.7/dist/htmx.min.js}" defer></script>
+    <script th:src="@{/csrf-config.js}" defer></script>
 </head>
 <body>
 <div class="min-h-screen flex flex-col">
