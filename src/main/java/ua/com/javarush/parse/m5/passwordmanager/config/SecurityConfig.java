@@ -49,7 +49,14 @@ public class SecurityConfig {
                     .permitAll() // Публичные страницы
                     .requestMatchers("/api/v1/auth/**")
                     .permitAll() // Статика (CSS, JS)
-                    .requestMatchers("/", "/login", "/register", "/error", "/main.css", "/img/**", "/csrf-config.js")
+                    .requestMatchers(
+                        "/",
+                        "/login",
+                        "/register",
+                        "/error",
+                        "/main.css",
+                        "/img/**",
+                        "/csrf-config.js")
                     .permitAll() // API для регистрации/входа
                     .requestMatchers(SWAGGER_WHITELIST)
                     .permitAll()
