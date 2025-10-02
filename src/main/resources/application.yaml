@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    default: dev
+    active: ${SPRING_PROFILE:dev}
   application:
     name: password-manager
   datasource:
