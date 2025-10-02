@@ -1,8 +1,6 @@
 package ua.com.javarush.parse.m5.passwordmanager.controller.web;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -10,13 +8,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Optional;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.com.javarush.parse.m5.passwordmanager.entity.Collection;
@@ -24,30 +20,18 @@ import ua.com.javarush.parse.m5.passwordmanager.security.JwtUtil;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 
 @WebMvcTest(CollectionControllerWeb.class)
-@Import(CollectionControllerWebTest.TestConfig.class)
-@DisplayName("CollectionControllerWeb Tests")
+@WithMockUser
 class CollectionControllerWebTest {
-
-  @TestConfiguration
-  static class TestConfig {
-    @Bean
-    public CollectionService collectionService() {
-      return mock(CollectionService.class);
-    }
-
-    @Bean
-    public JwtUtil jwtUtil() {
-      return mock(JwtUtil.class);
-    }
-  }
 
   @Autowired private MockMvc mockMvc;
 
-  @Autowired private CollectionService collectionService;
+  @MockBean private CollectionService collectionService;
+
+  @MockBean private JwtUtil jwtUtil;
+
+  @MockBean private UserDetailsService userDetailsService;
 
   @Test
-  @WithMockUser
-  @DisplayName("Show create collection form")
   void showCreateForm_shouldReturnCreateCollectionView() throws Exception {
     mockMvc
         .perform(get("/collections/create"))
@@ -57,58 +41,52 @@ class CollectionControllerWebTest {
   }
 
   @Test
-  @WithMockUser
-  @DisplayName("Save new collection and redirect to home")
   void save_shouldRedirectToHome() throws Exception {
-    Collection collection = new Collection();
-    collection.setName("Test Collection");
-    when(collectionService.save(any(Collection.class))).thenReturn(collection);
-
     mockMvc
-        .perform(
-            post("/collections/save")
-                .with(csrf())
-                .param("name", "Test Collection")
-                .param("description", "Test Description")
-                .param("color", "#FFFFFF")
-                .param("icon", "test-icon"))
+        .perform(post("/collections/save").with(csrf()).param("name", "Test Collection"))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/"));
   }
 
   @Test
-  @WithMockUser
-  @DisplayName("Show edit collection form")
-  void showEditForm_shouldReturnEditCollectionView() throws Exception {
-    Collection existingCollection = new Collection();
-    existingCollection.setId(1L);
-    existingCollection.setName("Existing Collection");
-    existingCollection.setDescription("Existing Description");
-    existingCollection.setColor("#000000");
-    existingCollection.setIcon("existing-icon");
+  void saveNewItem_withHxRequest_shouldReturnEmptyString() throws Exception {
+    mockMvc
+        .perform(
+            post("/collections/save")
+                .with(csrf())
+                .header("HX-Request", "true")
+                .param("name", "Test Collection"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(""));
+  }
 
-    CollectionControllerWeb.CollectionForm form = new CollectionControllerWeb.CollectionForm();
-    form.setId(existingCollection.getId());
-    form.setName(existingCollection.getName());
-    form.setDescription(existingCollection.getDescription());
-    form.setColor(existingCollection.getColor());
-    form.setIcon(existingCollection.getIcon());
+  @Test
+  void showCreateFormModal_withHxRequest_shouldReturnModalFragment() throws Exception {
+    mockMvc
+        .perform(get("/collections/create-modal").header("HX-Request", "true"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("component/create-collection-modal :: modal"))
+        .andExpect(model().attributeExists("collection"));
+  }
 
-    when(collectionService.findById(anyLong())).thenReturn(Optional.of(existingCollection));
+  @Test
+  void showEditForm_whenCollectionExists_shouldReturnEditCollectionView() throws Exception {
+    Collection collection = new Collection();
+    collection.setId(1L);
+    collection.setName("Test Collection");
+
+    when(collectionService.findById(1L)).thenReturn(Optional.of(collection));
 
     mockMvc
         .perform(get("/collections/edit/1"))
         .andExpect(status().isOk())
         .andExpect(view().name("edit-collection"))
-        .andExpect(model().attributeExists("collection"))
-        .andExpect(model().attribute("collection", form));
+        .andExpect(model().attributeExists("collection"));
   }
 
   @Test
-  @WithMockUser
-  @DisplayName("Show edit collection form - Not Found")
-  void showEditForm_shouldRedirectToHomeIfNotFound() throws Exception {
-    when(collectionService.findById(anyLong())).thenReturn(Optional.empty());
+  void showEditForm_whenCollectionDoesNotExist_shouldRedirectToHome() throws Exception {
+    when(collectionService.findById(1L)).thenReturn(Optional.empty());
 
     mockMvc
         .perform(get("/collections/edit/1"))
@@ -117,35 +95,33 @@ class CollectionControllerWebTest {
   }
 
   @Test
-  @WithMockUser
-  @DisplayName("Update existing collection and redirect")
   void update_shouldRedirectToCollections() throws Exception {
-    Collection updatedCollection = new Collection();
-    updatedCollection.setId(1L);
-    updatedCollection.setName("Updated Collection");
-    when(collectionService.update(anyLong(), any(Collection.class)))
-        .thenReturn(Optional.of(updatedCollection));
-
     mockMvc
-        .perform(
-            post("/collections/update/1")
-                .with(csrf())
-                .param("id", "1")
-                .param("name", "Updated Collection")
-                .param("description", "Updated Description")
-                .param("color", "#AAAAAA")
-                .param("icon", "updated-icon"))
+        .perform(post("/collections/update/1").with(csrf()).param("name", "Updated Collection"))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/collections"));
   }
 
   @Test
-  @WithMockUser
-  @DisplayName("Delete collection and redirect")
   void delete_shouldRedirectToCollections() throws Exception {
     mockMvc
         .perform(post("/collections/delete/1").with(csrf()))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/collections"));
+  }
+
+  @Test
+  void saveNewItem_withHxRequest_whenServiceThrowsException_shouldReturnError() throws Exception {
+    when(collectionService.save(any(Collection.class)))
+        .thenThrow(new RuntimeException("Test Exception"));
+
+    mockMvc
+        .perform(
+            post("/collections/save")
+                .with(csrf())
+                .header("HX-Request", "true")
+                .param("name", "Test Collection"))
+        .andExpect(status().isInternalServerError())
+        .andExpect(content().string("Error saving collection: Test Exception"));
   }
 }

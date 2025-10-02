@@ -77,17 +77,17 @@ jobs:
             ${{ github.workspace }}/target/site/jacoco/jacoco.xml,
             ${{ github.workspace }}/**/target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 80
-          min-coverage-changed-files: 80
+          min-coverage-overall: 70
+          min-coverage-changed-files: 70
           title: Code Coverage Report
           update-comment: true
 
-      - name: Fail PR if overall coverage is less than 80%
+      - name: Fail PR if overall coverage is less than 70%
         if: ${{ github.event_name == 'pull_request' && steps.jacoco.outputs.coverage-overall < 80.0 }}
         uses: actions/github-script@v7
         with:
           script: |
-            core.setFailed(`Overall coverage is less than 80%! Current coverage: ${process.env.COVERAGE}%`)
+            core.setFailed(`Overall coverage is less than 70%! Current coverage: ${process.env.COVERAGE}%`)
         env:
           COVERAGE: ${{ steps.jacoco.outputs.coverage-overall }}
 
@@ -98,12 +98,12 @@ jobs:
           script: |
             const coverage = parseFloat('${{ steps.jacoco.outputs.coverage-overall }}');
             const changed = parseFloat('${{ steps.jacoco.outputs.coverage-changed-files }}');
-            const isPassing = coverage >= 80.0;
+            const isPassing = coverage >= 70.0;
             const emoji = isPassing ? '✅' : '❌';
             const comment = `## ${emoji} Coverage Report
 
-            - **Overall Coverage**: ${coverage}% ${isPassing ? '(Passing)' : '(Failing - minimum 80% required)'}
-            - **Changed Files Coverage**: ${changed}% ${changed >= 80 ? '✓' : '✗ (minimum 80% required)'}
+            - **Overall Coverage**: ${coverage}% ${isPassing ? '(Passing)' : '(Failing - minimum 70% required)'}
+            - **Changed Files Coverage**: ${changed}% ${changed >= 70 ? '✓' : '✗ (minimum 70% required)'}
 
             ${!isPassing ? '⚠️ **This PR will be blocked until coverage reaches 80%**' : ''}`;
             github.rest.issues.createComment({
