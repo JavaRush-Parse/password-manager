@@ -114,9 +114,9 @@ class VaultControllerWebTest {
     when(service.findById(1L)).thenReturn(Optional.of(item));
 
     mockMvc
-        .perform(get("/vault-item/edit/{id}", 1L))
+        .perform(get("/vault-item/edit/{id}", 1L).header("HX-Request", "true"))
         .andExpect(status().isOk())
-        .andExpect(view().name("edit-vault"))
+        .andExpect(view().name("edit-vault :: modal"))
         .andExpect(model().attributeExists("vault"));
   }
 
@@ -128,7 +128,7 @@ class VaultControllerWebTest {
     when(service.findById(anyLong())).thenReturn(Optional.empty());
 
     mockMvc
-        .perform(get("/vault-item/edit/{id}", 1L))
+        .perform(get("/vault-item/edit/{id}", 1L).header("HX-Request", "true"))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/"));
   }
