@@ -153,4 +153,75 @@ class VaultControllerWebTest {
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/"));
   }
+
+  @Test
+  @WithMockUser
+  @DisplayName("Show create vault modal with HTMX")
+  void whenShowCreateFormModal_withHxRequest_thenReturnsModalFragment() throws Exception {
+    mockMvc
+        .perform(get("/vault-item/create-modal").header("HX-Request", "true"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("component/create-vault-modal :: modal"))
+        .andExpect(model().attributeExists("vault"))
+        .andExpect(model().attributeExists("collections"));
+  }
+
+  @Test
+  @WithMockUser
+  @DisplayName("Save new vault item with HTMX - Error handling")
+  void whenSaveNewItemHtmx_withException_thenReturnsError() throws Exception {
+    when(service.save(any(VaultItem.class))).thenThrow(new RuntimeException("Save failed"));
+
+    mockMvc
+        .perform(
+            post("/vault-item/save")
+                .with(csrf())
+                .header("HX-Request", "true")
+                .flashAttr("vault", new VaultItem()))
+        .andExpect(status().isInternalServerError())
+        .andExpect(content().string("Error saving item: Save failed"));
+  }
+
+  @Test
+  @WithMockUser
+  @DisplayName("Update vault item with HTMX and return empty string")
+  void whenUpdateItemHTMX_thenReturnsEmptyString() throws Exception {
+    mockMvc
+        .perform(
+            post("/vault-item/update/{id}", 1L)
+                .with(csrf())
+                .header("HX-Request", "true")
+                .flashAttr("vault", new VaultItem()))
+        .andExpect(status().isOk())
+        .andExpect(content().string(""));
+  }
+
+  @Test
+  @WithMockUser
+  @DisplayName("Update vault item with HTMX - Error handling")
+  void whenUpdateItemHTMX_withException_thenReturnsError() throws Exception {
+    when(service.update(any(Long.class), any(VaultItem.class)))
+        .thenThrow(new RuntimeException("Update failed"));
+
+    mockMvc
+        .perform(
+            post("/vault-item/update/{id}", 1L)
+                .with(csrf())
+                .header("HX-Request", "true")
+                .flashAttr("vault", new VaultItem()))
+        .andExpect(status().isInternalServerError())
+        .andExpect(content().string("Error updating item: Update failed"));
+  }
+
+  @Test
+  @WithMockUser
+  @DisplayName("Get vault item by ID - Item not found")
+  void whenGetById_withNonExistentId_thenReturnsViewWithoutAttribute() throws Exception {
+    when(service.findById(999L)).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(get("/vault-item/{id}", 999L))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/"));
+  }
 }

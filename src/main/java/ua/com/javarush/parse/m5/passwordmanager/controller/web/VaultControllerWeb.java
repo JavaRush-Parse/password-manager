@@ -26,11 +26,11 @@ public class VaultControllerWeb {
   @GetMapping("/{id:[0-9]+}")
   public String get(@PathVariable Long id, Model model) {
     Optional<VaultItem> byId = vaultItemService.findById(id);
-    byId.ifPresent(
-        vaultItem -> {
-          model.addAttribute("vaultItem", vaultItem);
-        });
-    return "vault";
+    if (byId.isPresent()) {
+      model.addAttribute("vaultItem", byId.get());
+      return "vault";
+    }
+    return RedirectConstants.REDIRECT_HOME;
   }
 
   @GetMapping("/create")
