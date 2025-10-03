@@ -91,7 +91,10 @@ public class VaultControllerWeb {
   @PostMapping(value = "/update/{id}", headers = "HX-Request=true")
   @ResponseBody
   @HxTrigger("refreshVaultTable")
-  public String updateItemHTMX(@PathVariable Long id, @ModelAttribute("vault") VaultItem itemFromForm, HttpServletResponse response) {
+  public String updateItemHTMX(
+      @PathVariable Long id,
+      @ModelAttribute("vault") VaultItem itemFromForm,
+      HttpServletResponse response) {
     try {
       vaultItemService.update(id, itemFromForm);
       return "";

@@ -8,7 +8,6 @@ import org.springframework.validation.BindingResult; // <-- Импортируе
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import ua.com.javarush.parse.m5.passwordmanager.config.RedirectConstants;
 import ua.com.javarush.parse.m5.passwordmanager.dto.user.UserRegistrationRequestDto;
 import ua.com.javarush.parse.m5.passwordmanager.service.UserService;
 

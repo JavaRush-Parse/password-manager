@@ -118,7 +118,10 @@ public class CollectionControllerWeb {
   @PostMapping(value = "/update/{id}", headers = "HX-Request=true")
   @ResponseBody
   @HxTrigger("refreshVaultTable")
-  public String updateHTMX(@PathVariable Long id, @ModelAttribute("collection") CollectionForm form, HttpServletResponse response) {
+  public String updateHTMX(
+      @PathVariable Long id,
+      @ModelAttribute("collection") CollectionForm form,
+      HttpServletResponse response) {
     try {
       Collection collection = new Collection();
       collection.setName(form.getName());
