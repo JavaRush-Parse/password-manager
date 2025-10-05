@@ -25,12 +25,12 @@
             <label for="password" class="form-label">Password<span class="text-red-600">*</span></label>
 
             <div id="password-wrapper">
-                <input type="password" id="password" name="password" th:value="*{password}"
-                       class="form-input" required/>
+                <div th:replace="~{fragments/password-input :: password-input(${vault.password})}"></div>
             </div>
 
             <div class="flex justify-start gap-3 pt-2">
                 <button type="button"
+                        onclick="togglePasswordVisibility()"
                         hx-get="/password/generate"
                         hx-target="#password-wrapper"
                         hx-swap="innerHTML"

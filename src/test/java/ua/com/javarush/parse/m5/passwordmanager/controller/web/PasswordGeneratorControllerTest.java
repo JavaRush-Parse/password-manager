@@ -40,7 +40,9 @@ class PasswordGeneratorControllerTest {
         .andExpect(status().isOk())
         .andExpect(view().name("fragments/password-input :: password-input"))
         .andExpect(model().attributeExists("generatedPassword"))
-        .andExpect(model().attribute("generatedPassword", testPassword));
+        .andExpect(model().attributeExists("showGeneratedPassword"))
+        .andExpect(model().attribute("generatedPassword", testPassword))
+        .andExpect(model().attribute("showGeneratedPassword", true));
   }
 
   @Test
@@ -67,6 +69,6 @@ class PasswordGeneratorControllerTest {
         .perform(get("/password/generate"))
         .andExpect(status().isOk())
         .andExpect(view().name("fragments/password-input :: password-input"))
-        .andExpect(model().size(1));
+        .andExpect(model().size(2));
   }
 }

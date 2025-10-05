@@ -25,8 +25,9 @@
             </div>
             <div>
                 <label class="form-label">Password</label>
-                <input type="password" id="password" th:field="*{password}"
-                       class="form-input"/>
+                <div id="password-wrapper">
+                    <div th:replace="~{fragments/password-input :: password-input(${vault.password})}"></div>
+                </div>
             </div>
 
             <div>
