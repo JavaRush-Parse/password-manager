@@ -1,5 +1,7 @@
 package ua.com.javarush.parse.m5.passwordmanager.controller.web;
 
+import static ua.com.javarush.parse.m5.passwordmanager.config.RedirectConstants.REDIRECT_HOME;
+
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxTrigger;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,11 +27,11 @@ public class VaultControllerWeb {
   @GetMapping("/{id:[0-9]+}")
   public String get(@PathVariable Long id, Model model) {
     Optional<VaultItem> byId = vaultItemService.findById(id);
-    byId.ifPresent(
-        vaultItem -> {
-          model.addAttribute("vaultItem", vaultItem);
-        });
-    return "vault";
+    if (byId.isPresent()) {
+      model.addAttribute("vaultItem", byId.get());
+      return "vault";
+    }
+    return REDIRECT_HOME;
   }
 
   @GetMapping("/create")
@@ -65,29 +67,48 @@ public class VaultControllerWeb {
   @PostMapping("/save")
   public String saveNewItem(@ModelAttribute("vault") VaultItem item) {
     vaultItemService.save(item);
-    return "redirect:/";
+    return REDIRECT_HOME;
   }
 
+  @HxRequest
   @GetMapping("/edit/{id}")
   public String showEditForm(@PathVariable Long id, Model model) {
     Optional<VaultItem> byId = vaultItemService.findById(id);
     if (byId.isPresent()) {
       model.addAttribute("vault", byId.get());
       model.addAttribute("collections", collectionService.findAll());
-      return "edit-vault";
+      return "edit-vault :: modal";
     }
-    return "redirect:/";
+    return REDIRECT_HOME;
   }
 
   @PostMapping("/update/{id}")
   public String updateItem(@PathVariable Long id, @ModelAttribute("vault") VaultItem itemFromForm) {
     vaultItemService.update(id, itemFromForm);
-    return "redirect:/";
+    return REDIRECT_HOME;
+  }
+
+  @HxRequest
+  @PostMapping(value = "/update/{id}", headers = "HX-Request=true")
+  @ResponseBody
+  @HxTrigger("refreshVaultTable")
+  public String updateItemHTMX(
+      @PathVariable Long id,
+      @ModelAttribute("vault") VaultItem itemFromForm,
+      HttpServletResponse response) {
+    try {
+      vaultItemService.update(id, itemFromForm);
+      return "";
+    } catch (Exception e) {
+      log.error("Error updating vault item", e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      return "Error updating item: " + e.getMessage();
+    }
   }
 
   @DeleteMapping("/delete/{id}")
   public String deleteItem(@PathVariable Long id) {
     vaultItemService.deleteById(id);
-    return "redirect:/";
+    return REDIRECT_HOME;
   }
 }

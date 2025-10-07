@@ -124,4 +124,64 @@ class CollectionControllerWebTest {
         .andExpect(status().isInternalServerError())
         .andExpect(content().string("Error saving collection: Test Exception"));
   }
+
+  @Test
+  void showEditFormModal_withHxRequest_whenCollectionExists_shouldReturnModalFragment()
+      throws Exception {
+    Collection collection = new Collection();
+    collection.setId(1L);
+    collection.setName("Test Collection");
+    collection.setDescription("Test Description");
+    collection.setColor("#FF0000");
+    collection.setIcon("fa-folder");
+
+    when(collectionService.findById(1L)).thenReturn(Optional.of(collection));
+
+    mockMvc
+        .perform(get("/collections/edit/1").header("HX-Request", "true"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("edit-collection :: modal"))
+        .andExpect(model().attributeExists("collection"));
+  }
+
+  @Test
+  void showEditFormModal_withHxRequest_whenCollectionDoesNotExist_shouldRedirectToHome()
+      throws Exception {
+    when(collectionService.findById(1L)).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(get("/collections/edit/1").header("HX-Request", "true"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/"));
+  }
+
+  @Test
+  void updateHTMX_withHxRequest_shouldReturnEmptyString() throws Exception {
+    mockMvc
+        .perform(
+            post("/collections/update/1")
+                .with(csrf())
+                .header("HX-Request", "true")
+                .param("name", "Updated Collection")
+                .param("description", "Updated Description")
+                .param("color", "#00FF00")
+                .param("icon", "fa-star"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(""));
+  }
+
+  @Test
+  void updateHTMX_withHxRequest_whenServiceThrowsException_shouldReturnError() throws Exception {
+    when(collectionService.update(any(Long.class), any(Collection.class)))
+        .thenThrow(new RuntimeException("Update failed"));
+
+    mockMvc
+        .perform(
+            post("/collections/update/1")
+                .with(csrf())
+                .header("HX-Request", "true")
+                .param("name", "Updated Collection"))
+        .andExpect(status().isInternalServerError())
+        .andExpect(content().string("Error updating collection: Update failed"));
+  }
 }
