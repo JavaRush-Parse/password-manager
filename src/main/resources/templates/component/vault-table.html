@@ -33,15 +33,11 @@
                     >
                     Edit
                 </button>
-                <a th:href="@{/vault-item/audit/{id}(id=${vaultItem.id})}"
-                   class="px-3 py-2 whitespace-nowrap ml-2 text-blue-600 hover:underline">
-                    Audit
-                </a>
-                <button hx-get=@{/vault-item/audit-modal/{id}(id=${vaultItem.id})}
-                        hx-target="#modal-placeholder"
-                        class="px-3 py-2 whitespace-nowrap ml-2 text-green-600 hover:underline bg-transparent border-0 cursor-pointer">
-                    View History
-                </button>
+<!--                <button hx-get=@{/vault-item/audit-modal/{id}(id=${vaultItem.id})}-->
+<!--                        hx-target="#modal-placeholder"-->
+<!--                        class="px-3 py-2 whitespace-nowrap ml-2 text-green-600 hover:underline bg-transparent border-0 cursor-pointer">-->
+<!--                    View History-->
+<!--                </button>-->
                 <form th:action="@{/vault-item/delete/{id}(id=${vaultItem.id})}"
                       th:method="delete"
                       class="inline-block ml-2"

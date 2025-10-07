@@ -20,8 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.security.JwtUtil;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
-import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultAuditService;
+import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
 @WebMvcTest(VaultControllerWeb.class)
 @Import(VaultControllerWebTest.TestConfig.class)
@@ -144,8 +144,7 @@ class VaultControllerWebTest {
   @DisplayName("Update vault item and redirect to home")
   void whenUpdateItem_thenRedirectsHome() throws Exception {
     mockMvc
-        .perform(
-            post("/vault-item/update/{id}", 1L).with(csrf()).flashAttr("vault", new VaultItem()))
+        .perform(post("/vault-item/update").with(csrf()).flashAttr("vault", new VaultItem()))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/"));
   }
@@ -194,7 +193,7 @@ class VaultControllerWebTest {
   void whenUpdateItemHTMX_thenReturnsEmptyString() throws Exception {
     mockMvc
         .perform(
-            post("/vault-item/update/{id}", 1L)
+            post("/vault-item/update")
                 .with(csrf())
                 .header("HX-Request", "true")
                 .flashAttr("vault", new VaultItem()))
@@ -206,12 +205,11 @@ class VaultControllerWebTest {
   @WithMockUser
   @DisplayName("Update vault item with HTMX - Error handling")
   void whenUpdateItemHTMX_withException_thenReturnsError() throws Exception {
-    when(service.update(any(Long.class), any(VaultItem.class)))
-        .thenThrow(new RuntimeException("Update failed"));
+    when(service.update(any(VaultItem.class))).thenThrow(new RuntimeException("Update failed"));
 
     mockMvc
         .perform(
-            post("/vault-item/update/{id}", 1L)
+            post("/vault-item/update")
                 .with(csrf())
                 .header("HX-Request", "true")
                 .flashAttr("vault", new VaultItem()))

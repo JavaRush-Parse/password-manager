@@ -1,5 +1,9 @@
 package ua.com.javarush.parse.m5.passwordmanager.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,24 +21,16 @@ import ua.com.javarush.parse.m5.passwordmanager.entity.VaultAudit;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.repository.VaultAuditRepository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 public class VaultAuditServiceTest {
 
-  @Mock
-  private VaultAuditRepository vaultAuditRepository;
+  @Mock private VaultAuditRepository vaultAuditRepository;
 
-  @Mock
-  private SecurityContext securityContext;
+  @Mock private SecurityContext securityContext;
 
-  @Mock
-  private Authentication authentication;
+  @Mock private Authentication authentication;
 
-  @InjectMocks
-  private VaultAuditService vaultAuditService;
+  @InjectMocks private VaultAuditService vaultAuditService;
 
   private VaultItem testVaultItem;
   private Collection testCollection;
@@ -45,15 +41,16 @@ public class VaultAuditServiceTest {
     testCollection.setId(1L);
     testCollection.setName("Test Collection");
 
-    testVaultItem = VaultItem.builder()
-        .id(1L)
-        .name("Test Item")
-        .resource("https://example.com")
-        .login("testuser")
-        .description("Test description")
-        .password("testpassword")
-        .collection(testCollection)
-        .build();
+    testVaultItem =
+        VaultItem.builder()
+            .id(1L)
+            .name("Test Item")
+            .resource("https://example.com")
+            .login("testuser")
+            .description("Test description")
+            .password("testpassword")
+            .collection(testCollection)
+            .build();
 
     SecurityContextHolder.setContext(securityContext);
   }
@@ -82,25 +79,27 @@ public class VaultAuditServiceTest {
   void logUpdate_ShouldSaveAuditLogsForChangedFields() {
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(authentication.getName()).thenReturn("test@example.com");
-    VaultItem oldItem = VaultItem.builder()
-        .id(1L)
-        .name("Old Name")
-        .resource("https://old.com")
-        .login("olduser")
-        .description("Old description")
-        .password("oldpassword")
-        .collection(testCollection)
-        .build();
+    VaultItem oldItem =
+        VaultItem.builder()
+            .id(1L)
+            .name("Old Name")
+            .resource("https://old.com")
+            .login("olduser")
+            .description("Old description")
+            .password("oldpassword")
+            .collection(testCollection)
+            .build();
 
-    VaultItem newItem = VaultItem.builder()
-        .id(1L)
-        .name("New Name")
-        .resource("https://new.com")
-        .login("newuser")
-        .description("New description")
-        .password("newpassword")
-        .collection(testCollection)
-        .build();
+    VaultItem newItem =
+        VaultItem.builder()
+            .id(1L)
+            .name("New Name")
+            .resource("https://new.com")
+            .login("newuser")
+            .description("New description")
+            .password("newpassword")
+            .collection(testCollection)
+            .build();
 
     vaultAuditService.logUpdate(oldItem, newItem);
 
@@ -111,25 +110,27 @@ public class VaultAuditServiceTest {
   void logUpdate_WithPasswordChange_ShouldMaskPasswords() {
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(authentication.getName()).thenReturn("test@example.com");
-    VaultItem oldItem = VaultItem.builder()
-        .id(1L)
-        .name("Test Item")
-        .resource("https://example.com")
-        .login("testuser")
-        .description("Test description")
-        .password("oldpassword")
-        .collection(testCollection)
-        .build();
+    VaultItem oldItem =
+        VaultItem.builder()
+            .id(1L)
+            .name("Test Item")
+            .resource("https://example.com")
+            .login("testuser")
+            .description("Test description")
+            .password("oldpassword")
+            .collection(testCollection)
+            .build();
 
-    VaultItem newItem = VaultItem.builder()
-        .id(1L)
-        .name("Test Item")
-        .resource("https://example.com")
-        .login("testuser")
-        .description("Test description")
-        .password("newpassword")
-        .collection(testCollection)
-        .build();
+    VaultItem newItem =
+        VaultItem.builder()
+            .id(1L)
+            .name("Test Item")
+            .resource("https://example.com")
+            .login("testuser")
+            .description("Test description")
+            .password("newpassword")
+            .collection(testCollection)
+            .build();
 
     vaultAuditService.logUpdate(oldItem, newItem);
 
@@ -170,13 +171,13 @@ public class VaultAuditServiceTest {
 
   @Test
   void getAuditHistory_ShouldReturnAuditHistoryFromRepository() {
-    List<VaultAudit> expectedAudits = List.of(
-        VaultAudit.builder()
-            .vaultItemId(1L)
-            .actionType(VaultAudit.ActionType.CREATE)
-            .changedAt(LocalDateTime.now())
-            .build()
-    );
+    List<VaultAudit> expectedAudits =
+        List.of(
+            VaultAudit.builder()
+                .vaultItemId(1L)
+                .actionType(VaultAudit.ActionType.CREATE)
+                .changedAt(LocalDateTime.now())
+                .build());
 
     when(vaultAuditRepository.findByVaultItemIdOrderByChangedAtDesc(1L)).thenReturn(expectedAudits);
 
@@ -188,16 +189,17 @@ public class VaultAuditServiceTest {
 
   @Test
   void getUserAuditHistory_ShouldReturnUserAuditHistoryFromRepository() {
-    List<VaultAudit> expectedAudits = List.of(
-        VaultAudit.builder()
-            .vaultItemId(1L)
-            .actionType(VaultAudit.ActionType.CREATE)
-            .changedBy("test@example.com")
-            .changedAt(LocalDateTime.now())
-            .build()
-    );
+    List<VaultAudit> expectedAudits =
+        List.of(
+            VaultAudit.builder()
+                .vaultItemId(1L)
+                .actionType(VaultAudit.ActionType.CREATE)
+                .changedBy("test@example.com")
+                .changedAt(LocalDateTime.now())
+                .build());
 
-    when(vaultAuditRepository.findByChangedByOrderByChangedAtDesc("test@example.com")).thenReturn(expectedAudits);
+    when(vaultAuditRepository.findByChangedByOrderByChangedAtDesc("test@example.com"))
+        .thenReturn(expectedAudits);
 
     List<VaultAudit> result = vaultAuditService.getUserAuditHistory("test@example.com");
 
@@ -217,25 +219,27 @@ public class VaultAuditServiceTest {
     newCollection.setId(2L);
     newCollection.setName("New Collection");
 
-    VaultItem oldItem = VaultItem.builder()
-        .id(1L)
-        .name("Test Item")
-        .resource("https://example.com")
-        .login("testuser")
-        .description("Test description")
-        .password("testpassword")
-        .collection(oldCollection)
-        .build();
+    VaultItem oldItem =
+        VaultItem.builder()
+            .id(1L)
+            .name("Test Item")
+            .resource("https://example.com")
+            .login("testuser")
+            .description("Test description")
+            .password("testpassword")
+            .collection(oldCollection)
+            .build();
 
-    VaultItem newItem = VaultItem.builder()
-        .id(1L)
-        .name("Test Item")
-        .resource("https://example.com")
-        .login("testuser")
-        .description("Test description")
-        .password("testpassword")
-        .collection(newCollection)
-        .build();
+    VaultItem newItem =
+        VaultItem.builder()
+            .id(1L)
+            .name("Test Item")
+            .resource("https://example.com")
+            .login("testuser")
+            .description("Test description")
+            .password("testpassword")
+            .collection(newCollection)
+            .build();
 
     vaultAuditService.logUpdate(oldItem, newItem);
 

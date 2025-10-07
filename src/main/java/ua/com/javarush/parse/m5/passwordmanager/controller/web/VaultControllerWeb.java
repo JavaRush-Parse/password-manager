@@ -13,8 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
-import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultAuditService;
+import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
 @Controller
 @RequestMapping("/vault-item")
@@ -84,22 +84,20 @@ public class VaultControllerWeb {
     return REDIRECT_HOME;
   }
 
-  @PostMapping("/update/{id}")
-  public String updateItem(@PathVariable Long id, @ModelAttribute("vault") VaultItem itemFromForm) {
-    vaultItemService.update(id, itemFromForm);
+  @PostMapping("/update")
+  public String updateItem(@ModelAttribute("vault") VaultItem itemFromForm) {
+    vaultItemService.update(itemFromForm);
     return REDIRECT_HOME;
   }
 
   @HxRequest
-  @PostMapping(value = "/update/{id}", headers = "HX-Request=true")
+  @PostMapping(value = "/update", headers = "HX-Request=true")
   @ResponseBody
   @HxTrigger("refreshVaultTable")
   public String updateItemHTMX(
-      @PathVariable Long id,
-      @ModelAttribute("vault") VaultItem itemFromForm,
-      HttpServletResponse response) {
+      @ModelAttribute("vault") VaultItem itemFromForm, HttpServletResponse response) {
     try {
-      vaultItemService.update(id, itemFromForm);
+      vaultItemService.update(itemFromForm);
       return "";
     } catch (Exception e) {
       log.error("Error updating vault item", e);

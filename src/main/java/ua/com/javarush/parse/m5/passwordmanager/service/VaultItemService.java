@@ -26,20 +26,23 @@ public class VaultItemService {
   }
 
   @Transactional
-  public Optional<VaultItem> update(Long id, VaultItem updatedItemData) {
+  public Optional<VaultItem> update(VaultItem updatedItemData) {
+    long id = updatedItemData.getId();
+
     return vaultItemRepository
         .findById(id)
         .map(
             existingItem -> {
-              VaultItem oldItemCopy = VaultItem.builder()
-                  .id(existingItem.getId())
-                  .name(existingItem.getName())
-                  .resource(existingItem.getResource())
-                  .login(existingItem.getLogin())
-                  .description(existingItem.getDescription())
-                  .password(existingItem.getPassword())
-                  .collection(existingItem.getCollection())
-                  .build();
+              VaultItem oldItemCopy =
+                  VaultItem.builder()
+                      .id(existingItem.getId())
+                      .name(existingItem.getName())
+                      .resource(existingItem.getResource())
+                      .login(existingItem.getLogin())
+                      .description(existingItem.getDescription())
+                      .password(existingItem.getPassword())
+                      .collection(existingItem.getCollection())
+                      .build();
 
               existingItem.setName(updatedItemData.getName());
               existingItem.setResource(updatedItemData.getResource());

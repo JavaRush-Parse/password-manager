@@ -1,7 +1,6 @@
 package ua.com.javarush.parse.m5.passwordmanager.controller.rest;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -114,7 +113,7 @@ class VaultItemControllerTest {
   void whenPut_thenUpdatesItem() throws Exception {
     VaultItem item = new VaultItem();
     item.setId(1L);
-    when(service.update(anyLong(), any(VaultItem.class))).thenReturn(Optional.of(item));
+    when(service.update(any(VaultItem.class))).thenReturn(Optional.of(item));
 
     mockMvc
         .perform(
@@ -130,7 +129,7 @@ class VaultItemControllerTest {
   @WithMockUser
   @DisplayName("Update vault item - Not Found")
   void whenPutNotFound_thenReturns404() throws Exception {
-    when(service.update(anyLong(), any(VaultItem.class))).thenReturn(Optional.empty());
+    when(service.update(any(VaultItem.class))).thenReturn(Optional.empty());
 
     mockMvc
         .perform(

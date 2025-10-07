@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,15 +22,16 @@ public class VaultAuditService {
   public void logCreate(VaultItem vaultItem) {
     String currentUser = getCurrentUser();
 
-    VaultAudit audit = VaultAudit.builder()
-        .vaultItemId(vaultItem.getId())
-        .actionType(VaultAudit.ActionType.CREATE)
-        .fieldName("*")
-        .oldValue(null)
-        .newValue(buildItemSnapshot(vaultItem))
-        .changedAt(LocalDateTime.now())
-        .changedBy(currentUser)
-        .build();
+    VaultAudit audit =
+        VaultAudit.builder()
+            .vaultItemId(vaultItem.getId())
+            .actionType(VaultAudit.ActionType.CREATE)
+            .fieldName("*")
+            .oldValue(null)
+            .newValue(buildItemSnapshot(vaultItem))
+            .changedAt(LocalDateTime.now())
+            .changedBy(currentUser)
+            .build();
 
     vaultAuditRepository.save(audit);
   }
@@ -45,7 +45,8 @@ public class VaultAuditService {
     }
 
     if (!Objects.equals(oldItem.getResource(), newItem.getResource())) {
-      logFieldChange(newItem.getId(), "resource", oldItem.getResource(), newItem.getResource(), currentUser);
+      logFieldChange(
+          newItem.getId(), "resource", oldItem.getResource(), newItem.getResource(), currentUser);
     }
 
     if (!Objects.equals(oldItem.getLogin(), newItem.getLogin())) {
@@ -53,7 +54,12 @@ public class VaultAuditService {
     }
 
     if (!Objects.equals(oldItem.getDescription(), newItem.getDescription())) {
-      logFieldChange(newItem.getId(), "description", oldItem.getDescription(), newItem.getDescription(), currentUser);
+      logFieldChange(
+          newItem.getId(),
+          "description",
+          oldItem.getDescription(),
+          newItem.getDescription(),
+          currentUser);
     }
 
     if (!Objects.equals(oldItem.getPassword(), newItem.getPassword())) {
@@ -61,9 +67,12 @@ public class VaultAuditService {
     }
 
     if (!Objects.equals(oldItem.getCollection(), newItem.getCollection())) {
-      String oldCollectionName = oldItem.getCollection() != null ? oldItem.getCollection().getName() : null;
-      String newCollectionName = newItem.getCollection() != null ? newItem.getCollection().getName() : null;
-      logFieldChange(newItem.getId(), "collection", oldCollectionName, newCollectionName, currentUser);
+      String oldCollectionName =
+          oldItem.getCollection() != null ? oldItem.getCollection().getName() : null;
+      String newCollectionName =
+          newItem.getCollection() != null ? newItem.getCollection().getName() : null;
+      logFieldChange(
+          newItem.getId(), "collection", oldCollectionName, newCollectionName, currentUser);
     }
   }
 
@@ -71,15 +80,16 @@ public class VaultAuditService {
   public void logDelete(Long vaultItemId) {
     String currentUser = getCurrentUser();
 
-    VaultAudit audit = VaultAudit.builder()
-        .vaultItemId(vaultItemId)
-        .actionType(VaultAudit.ActionType.DELETE)
-        .fieldName("*")
-        .oldValue("Item deleted")
-        .newValue(null)
-        .changedAt(LocalDateTime.now())
-        .changedBy(currentUser)
-        .build();
+    VaultAudit audit =
+        VaultAudit.builder()
+            .vaultItemId(vaultItemId)
+            .actionType(VaultAudit.ActionType.DELETE)
+            .fieldName("*")
+            .oldValue("Item deleted")
+            .newValue(null)
+            .changedAt(LocalDateTime.now())
+            .changedBy(currentUser)
+            .build();
 
     vaultAuditRepository.save(audit);
   }
@@ -94,16 +104,18 @@ public class VaultAuditService {
     return vaultAuditRepository.findByChangedByOrderByChangedAtDesc(username);
   }
 
-  private void logFieldChange(Long vaultItemId, String fieldName, String oldValue, String newValue, String changedBy) {
-    VaultAudit audit = VaultAudit.builder()
-        .vaultItemId(vaultItemId)
-        .actionType(VaultAudit.ActionType.UPDATE)
-        .fieldName(fieldName)
-        .oldValue(oldValue)
-        .newValue(newValue)
-        .changedAt(LocalDateTime.now())
-        .changedBy(changedBy)
-        .build();
+  private void logFieldChange(
+      Long vaultItemId, String fieldName, String oldValue, String newValue, String changedBy) {
+    VaultAudit audit =
+        VaultAudit.builder()
+            .vaultItemId(vaultItemId)
+            .actionType(VaultAudit.ActionType.UPDATE)
+            .fieldName(fieldName)
+            .oldValue(oldValue)
+            .newValue(newValue)
+            .changedAt(LocalDateTime.now())
+            .changedBy(changedBy)
+            .build();
 
     vaultAuditRepository.save(audit);
   }
@@ -119,7 +131,9 @@ public class VaultAuditService {
     snapshot.append("resource: ").append(item.getResource()).append(", ");
     snapshot.append("login: ").append(item.getLogin()).append(", ");
     snapshot.append("description: ").append(item.getDescription()).append(", ");
-    snapshot.append("collection: ").append(item.getCollection() != null ? item.getCollection().getName() : "none");
+    snapshot
+        .append("collection: ")
+        .append(item.getCollection() != null ? item.getCollection().getName() : "none");
     return snapshot.toString();
   }
 }

@@ -13,7 +13,8 @@ public interface VaultAuditRepository extends JpaRepository<VaultAudit, Long> {
 
   List<VaultAudit> findByVaultItemId(Long vaultItemId, Sort sort);
 
-  @Query("SELECT va FROM VaultAudit va WHERE va.vaultItemId = :vaultItemId ORDER BY va.changedAt DESC")
+  @Query(
+      "SELECT va FROM VaultAudit va WHERE va.vaultItemId = :vaultItemId ORDER BY va.changedAt DESC")
   List<VaultAudit> findByVaultItemIdOrderByChangedAtDesc(@Param("vaultItemId") Long vaultItemId);
 
   @Query("SELECT va FROM VaultAudit va WHERE va.changedBy = :changedBy ORDER BY va.changedAt DESC")

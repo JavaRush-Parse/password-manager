@@ -5,7 +5,7 @@
     <div th:fragment="modal" th:replace="~{component/modal :: modal(title='Edit Vault Item', form=~{:: form})}"></div>
 
     <th:block th:fragment="form">
-        <form hx:post="@{/vault-item/save}" hx-target="#modal-backdrop" hx-swap="outerHTML" th:object="${vault}" method="post" class="space-y-5">
+        <form hx:post="@{/vault-item/update}" hx-target="#modal-backdrop" hx-swap="outerHTML" th:object="${vault}" method="post" class="space-y-5">
 
             <input th:field="*{id}" type="hidden"/>
             <div>
@@ -51,10 +51,12 @@
                         class="btn-primary">
                     Update Item
                 </button>
-                <a th:href="@{/}"
-                   class="btn-secondary">
+                <button
+                   class="btn-secondary"
+                   onclick="this.closest('#modal-backdrop').remove()"
+                >
                     Cancel
-                </a>
+                </button>
             </div>
         </form>
     </th:block>

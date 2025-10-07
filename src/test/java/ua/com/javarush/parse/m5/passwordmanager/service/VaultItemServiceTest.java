@@ -53,17 +53,18 @@ class VaultItemServiceTest {
     existingItem.setName("Old Name");
 
     VaultItem updatedData = new VaultItem();
+    updatedData.setId(existingItem.getId());
     updatedData.setName("New Name");
     updatedData.setResource("Resource");
     updatedData.setLogin("Login");
     updatedData.setDescription("Description");
     updatedData.setPassword("password");
 
-    when(repository.findById(1L)).thenReturn(Optional.of(existingItem));
+    when(repository.findById(existingItem.getId())).thenReturn(Optional.of(existingItem));
     when(repository.save(any(VaultItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     // When
-    Optional<VaultItem> result = service.update(1L, updatedData);
+    Optional<VaultItem> result = service.update(updatedData);
 
     // Then
     assertThat(result).isPresent();
