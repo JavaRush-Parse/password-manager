@@ -2,14 +2,19 @@
   "name": "new-contact-manager-frontend",
   "version": "1.0.0",
   "scripts": {
-    "build": "tailwindcss -i src/tailwind.css -o ../resources/static/main.css",
-    "watch": "tailwindcss --watch -i src/tailwind.css -o ../resources/static/main.css"
+    "build": "npm run build:css && npm run build:js",
+    "watch": "npm run watch:css & npm run watch:js",
+    "build:css": "tailwindcss -i src/tailwind.css -o ../resources/static/main.css",
+    "build:js": "esbuild src/index.js --bundle --outfile=../resources/static/bundle.js --minify",
+    "watch:css": "tailwindcss --watch -i src/tailwind.css -o ../resources/static/main.css",
+    "watch:js": "esbuild src/index.js --bundle --outfile=../resources/static/bundle.js --watch"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@tailwindcss/cli": "^4.0.17"
+    "@tailwindcss/cli": "^4.0.17",
+    "esbuild": "^0.20.0"
   },
   "dependencies": {
     "autoprefixer": "^10.4.21",

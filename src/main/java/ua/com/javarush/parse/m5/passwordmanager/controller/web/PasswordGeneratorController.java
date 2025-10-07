@@ -16,6 +16,7 @@ public class PasswordGeneratorController {
   public String generatePassword(Model model) {
     String generatedPassword = passwordGeneratorService.generateStrongPassword();
     model.addAttribute("generatedPassword", generatedPassword);
+    model.addAttribute("showGeneratedPassword", true);
     return "fragments/password-input :: password-input";
   }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <body>
 
 <div th:fragment="vaultTable(vaultItems)" class="overflow-x-auto rounded border border-gray-300 shadow-sm container">
@@ -25,11 +25,14 @@
             <td th:text="${vaultItem.resource}" class="px-3 py-2 whitespace-nowrap"></td>
             <td th:text="${vaultItem.description}" class="px-3 py-2 whitespace-nowrap"></td>
             <td th:text="${vaultItem.login}" class="px-3 py-2 whitespace-nowrap"></td>
-            <td>
-                <a th:href="@{/vault-item/edit/{id}(id=${vaultItem.id})}"
-                   class="px-3 py-2 whitespace-nowrap">
+            <td class="px-3 py-2 whitespace-nowrap">
+                <button hx:get="@{/vault-item/edit/{id}(id=${vaultItem.id})}"
+                    hx-target="body"
+                    hx-swap="beforeend"
+                    class="btn-secondary"
+                    >
                     Edit
-                </a>
+                </button>
                 <a th:href="@{/vault-item/audit/{id}(id=${vaultItem.id})}"
                    class="px-3 py-2 whitespace-nowrap ml-2 text-blue-600 hover:underline">
                     Audit
