@@ -21,6 +21,7 @@ import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.security.JwtUtil;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
+import ua.com.javarush.parse.m5.passwordmanager.service.VaultAuditService;
 
 @WebMvcTest(VaultControllerWeb.class)
 @Import(VaultControllerWebTest.TestConfig.class)
@@ -37,6 +38,11 @@ class VaultControllerWebTest {
     @Bean
     public CollectionService collectionService() {
       return mock(CollectionService.class);
+    }
+
+    @Bean
+    public VaultAuditService vaultAuditService() {
+      return mock(VaultAuditService.class);
     }
 
     @Bean
