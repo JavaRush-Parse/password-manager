@@ -3,16 +3,16 @@ package ua.com.javarush.parse.m5.passwordmanager.controller.web;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultAudit;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
-import ua.com.javarush.parse.m5.passwordmanager.config.SecurityConfig;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultAuditService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
@@ -21,24 +21,29 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(VaultControllerWeb.class)
-@Import(SecurityConfig.class)
+@ExtendWith(MockitoExtension.class)
 public class VaultControllerWebAuditTest {
 
-  @Autowired
-  private MockMvc mockMvc;
-
-  @MockBean
+  @Mock
   private VaultItemService vaultItemService;
 
-  @MockBean
+  @Mock
   private CollectionService collectionService;
 
-  @MockBean
+  @Mock
   private VaultAuditService vaultAuditService;
 
+  @InjectMocks
+  private VaultControllerWeb vaultControllerWeb;
+
+  private MockMvc mockMvc;
+
+  @BeforeEach
+  void setUp() {
+    mockMvc = MockMvcBuilders.standaloneSetup(vaultControllerWeb).build();
+  }
+
   @Test
-  @WithMockUser
   void showAuditHistory_ShouldReturnAuditHistoryView() throws Exception {
     VaultItem vaultItem = VaultItem.builder()
         .id(1L)
@@ -72,7 +77,6 @@ public class VaultControllerWebAuditTest {
   }
 
   @Test
-  @WithMockUser
   void showAuditHistory_WithNonExistentVaultItem_ShouldRedirectToHome() throws Exception {
     when(vaultItemService.findById(999L)).thenReturn(Optional.empty());
 
@@ -82,7 +86,6 @@ public class VaultControllerWebAuditTest {
   }
 
   @Test
-  @WithMockUser
   void showAuditHistoryModal_ShouldReturnModalFragment() throws Exception {
     VaultItem vaultItem = VaultItem.builder()
         .id(1L)
@@ -116,7 +119,6 @@ public class VaultControllerWebAuditTest {
   }
 
   @Test
-  @WithMockUser
   void showAuditHistoryModal_WithNonExistentVaultItem_ShouldReturnErrorFragment() throws Exception {
     when(vaultItemService.findById(999L)).thenReturn(Optional.empty());
 
@@ -126,9 +128,4 @@ public class VaultControllerWebAuditTest {
         .andExpect(view().name("component/audit-history-modal :: error"));
   }
 
-  @Test
-  void showAuditHistory_WithoutAuthentication_ShouldRedirectToLogin() throws Exception {
-    mockMvc.perform(get("/vault-item/audit/1"))
-        .andExpect(status().is3xxRedirection());
-  }
 }

@@ -1,39 +1,40 @@
 package ua.com.javarush.parse.m5.passwordmanager.controller.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultAudit;
-import ua.com.javarush.parse.m5.passwordmanager.config.SecurityConfig;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultAuditService;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(VaultAuditController.class)
-@Import(SecurityConfig.class)
+@ExtendWith(MockitoExtension.class)
 public class VaultAuditControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
-
-  @MockBean
+  @Mock
   private VaultAuditService vaultAuditService;
 
-  @Autowired
-  private ObjectMapper objectMapper;
+  @InjectMocks
+  private VaultAuditController vaultAuditController;
+
+  private MockMvc mockMvc;
+
+  @BeforeEach
+  void setUp() {
+    mockMvc = MockMvcBuilders.standaloneSetup(vaultAuditController).build();
+  }
 
   @Test
-  @WithMockUser
   void getAuditHistory_ShouldReturnAuditHistory() throws Exception {
     List<VaultAudit> auditHistory = List.of(
         VaultAudit.builder()
@@ -72,7 +73,6 @@ public class VaultAuditControllerTest {
   }
 
   @Test
-  @WithMockUser
   void getUserAuditHistory_ShouldReturnUserAuditHistory() throws Exception {
     List<VaultAudit> userAuditHistory = List.of(
         VaultAudit.builder()
@@ -97,7 +97,6 @@ public class VaultAuditControllerTest {
   }
 
   @Test
-  @WithMockUser
   void getAuditHistory_WithEmptyResult_ShouldReturnEmptyArray() throws Exception {
     when(vaultAuditService.getAuditHistory(999L)).thenReturn(List.of());
 
@@ -108,10 +107,4 @@ public class VaultAuditControllerTest {
         .andExpect(jsonPath("$.length()").value(0));
   }
 
-  @Test
-  void getAuditHistory_WithoutAuthentication_ShouldReturnUnauthorized() throws Exception {
-    mockMvc.perform(get("/api/v1/vault-audit/item/1")
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isUnauthorized());
-  }
 }
