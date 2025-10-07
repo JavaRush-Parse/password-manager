@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
+import ua.com.javarush.parse.m5.passwordmanager.service.VaultAuditService;
 
 @Controller
 @RequestMapping("/vault-item")
@@ -21,6 +22,7 @@ public class VaultControllerWeb {
 
   private final VaultItemService vaultItemService;
   private final CollectionService collectionService;
+  private final VaultAuditService vaultAuditService;
 
   @GetMapping("/{id:[0-9]+}")
   public String get(@PathVariable Long id, Model model) {
@@ -89,5 +91,28 @@ public class VaultControllerWeb {
   public String deleteItem(@PathVariable Long id) {
     vaultItemService.deleteById(id);
     return "redirect:/";
+  }
+
+  @GetMapping("/audit/{id}")
+  public String showAuditHistory(@PathVariable Long id, Model model) {
+    Optional<VaultItem> vaultItem = vaultItemService.findById(id);
+    if (vaultItem.isPresent()) {
+      model.addAttribute("vaultItem", vaultItem.get());
+      model.addAttribute("auditHistory", vaultAuditService.getAuditHistory(id));
+      return "audit-history";
+    }
+    return "redirect:/";
+  }
+
+  @HxRequest
+  @GetMapping("/audit-modal/{id}")
+  public String showAuditHistoryModal(@PathVariable Long id, Model model) {
+    Optional<VaultItem> vaultItem = vaultItemService.findById(id);
+    if (vaultItem.isPresent()) {
+      model.addAttribute("vaultItem", vaultItem.get());
+      model.addAttribute("auditHistory", vaultAuditService.getAuditHistory(id));
+      return "component/audit-history-modal :: modal";
+    }
+    return "component/audit-history-modal :: error";
   }
 }

@@ -22,6 +22,7 @@ import ua.com.javarush.parse.m5.passwordmanager.repository.VaultItemRepository;
 class VaultItemServiceTest {
 
   @Mock private VaultItemRepository repository;
+  @Mock private VaultAuditService vaultAuditService;
 
   @InjectMocks private VaultItemService service;
 
@@ -38,6 +39,7 @@ class VaultItemServiceTest {
     // Then
     assertThat(saved).isNotNull();
     verify(repository).save(vaultItem);
+    verify(vaultAuditService).logCreate(saved);
   }
 
   @Test
@@ -68,6 +70,7 @@ class VaultItemServiceTest {
     assertThat(result.get().getName()).isEqualTo("New Name");
     verify(repository).findById(1L);
     verify(repository).save(existingItem);
+    verify(vaultAuditService).logUpdate(any(VaultItem.class), any(VaultItem.class));
   }
 
   @Test
@@ -123,6 +126,7 @@ class VaultItemServiceTest {
     service.deleteById(1L);
 
     // Then
+    verify(vaultAuditService).logDelete(1L);
     verify(repository).deleteById(1L);
   }
 
