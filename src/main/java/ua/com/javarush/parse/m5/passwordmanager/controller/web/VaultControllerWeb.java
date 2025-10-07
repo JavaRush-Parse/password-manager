@@ -9,10 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ua.com.javarush.parse.m5.passwordmanager.config.RedirectConstants;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
+
+import static ua.com.javarush.parse.m5.passwordmanager.config.RedirectConstants.REDIRECT_HOME;
 
 @Controller
 @RequestMapping("/vault-item")
@@ -30,7 +31,7 @@ public class VaultControllerWeb {
       model.addAttribute("vaultItem", byId.get());
       return "vault";
     }
-    return RedirectConstants.REDIRECT_HOME;
+    return REDIRECT_HOME;
   }
 
   @GetMapping("/create")
@@ -66,7 +67,7 @@ public class VaultControllerWeb {
   @PostMapping("/save")
   public String saveNewItem(@ModelAttribute("vault") VaultItem item) {
     vaultItemService.save(item);
-    return RedirectConstants.REDIRECT_HOME;
+    return REDIRECT_HOME;
   }
 
   @HxRequest
@@ -78,13 +79,13 @@ public class VaultControllerWeb {
       model.addAttribute("collections", collectionService.findAll());
       return "edit-vault :: modal";
     }
-    return RedirectConstants.REDIRECT_HOME;
+    return REDIRECT_HOME;
   }
 
   @PostMapping("/update/{id}")
   public String updateItem(@PathVariable Long id, @ModelAttribute("vault") VaultItem itemFromForm) {
     vaultItemService.update(id, itemFromForm);
-    return RedirectConstants.REDIRECT_HOME;
+    return REDIRECT_HOME;
   }
 
   @HxRequest
@@ -108,6 +109,6 @@ public class VaultControllerWeb {
   @DeleteMapping("/delete/{id}")
   public String deleteItem(@PathVariable Long id) {
     vaultItemService.deleteById(id);
-    return RedirectConstants.REDIRECT_HOME;
+    return REDIRECT_HOME;
   }
 }

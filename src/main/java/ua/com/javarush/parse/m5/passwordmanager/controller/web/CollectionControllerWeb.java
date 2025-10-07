@@ -14,13 +14,14 @@ import ua.com.javarush.parse.m5.passwordmanager.config.RedirectConstants;
 import ua.com.javarush.parse.m5.passwordmanager.entity.Collection;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 
+import static ua.com.javarush.parse.m5.passwordmanager.config.RedirectConstants.REDIRECT_HOME;
+
 @Slf4j
 @Controller
 @RequestMapping("/collections")
 @RequiredArgsConstructor
 public class CollectionControllerWeb {
 
-  private static final String REDIRECT_HOME = "redirect:/";
   private final CollectionService collectionService;
 
   @GetMapping("/create")
