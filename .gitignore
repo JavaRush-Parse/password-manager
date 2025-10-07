@@ -327,3 +327,4 @@ Temporary Items
 /target/
 /.classpath
 /src/main/resources/static/main.css
+/src/main/resources/static/bundle.js
