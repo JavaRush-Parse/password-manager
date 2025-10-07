@@ -1,5 +1,7 @@
 package ua.com.javarush.parse.m5.passwordmanager.controller.web;
 
+import static ua.com.javarush.parse.m5.passwordmanager.config.RedirectConstants.REDIRECT_HOME;
+
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxTrigger;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
-
-import static ua.com.javarush.parse.m5.passwordmanager.config.RedirectConstants.REDIRECT_HOME;
 
 @Controller
 @RequestMapping("/vault-item")
