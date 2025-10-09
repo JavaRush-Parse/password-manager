@@ -133,4 +133,12 @@ public class VaultItemService {
     vaultAuditService.logDelete(id);
     vaultItemRepository.deleteById(id);
   }
+
+  @Transactional(readOnly = true)
+  public List<VaultItem> search(String searchTerm) {
+    if (searchTerm == null || searchTerm.isBlank()) {
+      return vaultItemRepository.findAll();
+    }
+    return vaultItemRepository.searchByNameResourceOrLogin(searchTerm);
+  }
 }
