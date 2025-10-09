@@ -2,7 +2,6 @@ package ua.com.javarush.parse.m5.passwordmanager.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.Duration;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
@@ -23,7 +22,9 @@ public class RedisConfig {
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
     objectMapper.activateDefaultTyping(
-        objectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        objectMapper.getPolymorphicTypeValidator(),
+        ObjectMapper.DefaultTyping.NON_FINAL,
+        JsonTypeInfo.As.PROPERTY);
 
     return RedisCacheConfiguration.defaultCacheConfig()
         .entryTtl(Duration.ofMinutes(30))
@@ -39,20 +40,35 @@ public class RedisConfig {
   public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
     return (builder) ->
         builder
-            .withCacheConfiguration("vault-items",
+            .withCacheConfiguration(
+                "vault-items",
                 RedisCacheConfiguration.defaultCacheConfig()
                     .entryTtl(Duration.ofMinutes(15))
-                    .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                    .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())))
-            .withCacheConfiguration("collections",
+                    .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(
+                            new StringRedisSerializer()))
+                    .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(
+                            new GenericJackson2JsonRedisSerializer())))
+            .withCacheConfiguration(
+                "collections",
                 RedisCacheConfiguration.defaultCacheConfig()
                     .entryTtl(Duration.ofMinutes(10))
-                    .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                    .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())))
-            .withCacheConfiguration("users",
+                    .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(
+                            new StringRedisSerializer()))
+                    .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(
+                            new GenericJackson2JsonRedisSerializer())))
+            .withCacheConfiguration(
+                "users",
                 RedisCacheConfiguration.defaultCacheConfig()
                     .entryTtl(Duration.ofMinutes(5))
-                    .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                    .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())));
+                    .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(
+                            new StringRedisSerializer()))
+                    .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(
+                            new GenericJackson2JsonRedisSerializer())));
   }
 }
