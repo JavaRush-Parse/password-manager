@@ -1,5 +1,6 @@
 # Password Manager
 
+
 [<img alt="JavaRush University" src="https://img.shields.io/badge/java-rush-orange?style=for-the-badge&color=orange&cacheSeconds=3600">](https://javarush.com/)
 [<img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen?style=for-the-badge">](https://spring.io/projects/spring-boot)
 [<img alt="Java" src="https://img.shields.io/badge/Java-21-orange?style=for-the-badge">](https://openjdk.org/projects/jdk/21/)
