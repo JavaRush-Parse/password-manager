@@ -1,6 +1,5 @@
 package ua.com.javarush.parse.m5.passwordmanager.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.Collection;
@@ -29,11 +28,9 @@ public class User implements UserDetails {
   @Column(nullable = false, unique = true)
   private String email;
 
-  @JsonIgnore
   @Column(nullable = false)
   private String password;
 
-  @JsonIgnore
   @ManyToMany
   @JoinTable(
       name = "users_roles",

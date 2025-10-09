@@ -2,7 +2,6 @@ package ua.com.javarush.parse.m5.passwordmanager.security;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,7 +14,6 @@ public class CustomUserDetailsService implements UserDetailsService {
   private final UserRepository userRepository;
 
   @Override
-  @Cacheable(value = "users", key = "#email")
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     return userRepository
         .findByEmail(email)

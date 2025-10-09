@@ -38,6 +38,13 @@ public class RedisConfig {
 
   @Bean
   public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.activateDefaultTyping(
+        objectMapper.getPolymorphicTypeValidator(),
+        ObjectMapper.DefaultTyping.NON_FINAL,
+        JsonTypeInfo.As.PROPERTY);
+
     return (builder) ->
         builder
             .withCacheConfiguration(
@@ -49,7 +56,7 @@ public class RedisConfig {
                             new StringRedisSerializer()))
                     .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                            new GenericJackson2JsonRedisSerializer())))
+                            new GenericJackson2JsonRedisSerializer(objectMapper))))
             .withCacheConfiguration(
                 "collections",
                 RedisCacheConfiguration.defaultCacheConfig()
@@ -59,7 +66,7 @@ public class RedisConfig {
                             new StringRedisSerializer()))
                     .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                            new GenericJackson2JsonRedisSerializer())))
+                            new GenericJackson2JsonRedisSerializer(objectMapper))))
             .withCacheConfiguration(
                 "users",
                 RedisCacheConfiguration.defaultCacheConfig()
@@ -69,6 +76,6 @@ public class RedisConfig {
                             new StringRedisSerializer()))
                     .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                            new GenericJackson2JsonRedisSerializer())));
+                            new GenericJackson2JsonRedisSerializer(objectMapper))));
   }
 }
