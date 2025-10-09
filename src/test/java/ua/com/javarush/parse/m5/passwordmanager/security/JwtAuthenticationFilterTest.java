@@ -67,7 +67,7 @@ class JwtAuthenticationFilterTest {
     // Given
     String token = "invalidToken";
     when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + token);
-    when(jwtUtil.isValidToken(token)).thenReturn(false);
+    when(jwtUtil.isValidToken(anyString())).thenReturn(false);
 
     // When
     jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
