@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.CollectionService;
+import ua.com.javarush.parse.m5.passwordmanager.service.VaultAuditService;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
 @Controller
@@ -23,6 +24,7 @@ public class VaultControllerWeb {
 
   private final VaultItemService vaultItemService;
   private final CollectionService collectionService;
+  private final VaultAuditService vaultAuditService;
 
   @GetMapping("/{id:[0-9]+}")
   public String get(@PathVariable Long id, Model model) {
@@ -82,22 +84,20 @@ public class VaultControllerWeb {
     return REDIRECT_HOME;
   }
 
-  @PostMapping("/update/{id}")
-  public String updateItem(@PathVariable Long id, @ModelAttribute("vault") VaultItem itemFromForm) {
-    vaultItemService.update(id, itemFromForm);
+  @PostMapping("/update")
+  public String updateItem(@ModelAttribute("vault") VaultItem itemFromForm) {
+    vaultItemService.update(itemFromForm);
     return REDIRECT_HOME;
   }
 
   @HxRequest
-  @PostMapping(value = "/update/{id}", headers = "HX-Request=true")
+  @PostMapping(value = "/update", headers = "HX-Request=true")
   @ResponseBody
   @HxTrigger("refreshVaultTable")
   public String updateItemHTMX(
-      @PathVariable Long id,
-      @ModelAttribute("vault") VaultItem itemFromForm,
-      HttpServletResponse response) {
+      @ModelAttribute("vault") VaultItem itemFromForm, HttpServletResponse response) {
     try {
-      vaultItemService.update(id, itemFromForm);
+      vaultItemService.update(itemFromForm);
       return "";
     } catch (Exception e) {
       log.error("Error updating vault item", e);
@@ -110,5 +110,28 @@ public class VaultControllerWeb {
   public String deleteItem(@PathVariable Long id) {
     vaultItemService.deleteById(id);
     return REDIRECT_HOME;
+  }
+
+  @GetMapping("/audit/{id}")
+  public String showAuditHistory(@PathVariable Long id, Model model) {
+    Optional<VaultItem> vaultItem = vaultItemService.findById(id);
+    if (vaultItem.isPresent()) {
+      model.addAttribute("vaultItem", vaultItem.get());
+      model.addAttribute("auditHistory", vaultAuditService.getAuditHistory(id));
+      return "audit-history";
+    }
+    return "redirect:/";
+  }
+
+  @HxRequest
+  @GetMapping("/audit-modal/{id}")
+  public String showAuditHistoryModal(@PathVariable Long id, Model model) {
+    Optional<VaultItem> vaultItem = vaultItemService.findById(id);
+    if (vaultItem.isPresent()) {
+      model.addAttribute("vaultItem", vaultItem.get());
+      model.addAttribute("auditHistory", vaultAuditService.getAuditHistory(id));
+      return "component/audit-history-modal :: modal";
+    }
+    return "component/audit-history-modal :: error";
   }
 }

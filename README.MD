@@ -179,7 +179,7 @@ If you prefer to use H2 in-memory database:
 - `GET /vault-item/create` - Create new vault item form
 - `POST /vault-item/save` - Save new vault item
 - `GET /vault-item/edit/{id}` - Edit existing vault item form
-- `POST /vault-item/update/{id}` - Update existing vault item
+- `POST /vault-item/update` - Update existing vault item
 - `GET /vault-item/{id}` - View individual vault item details
 
 **Features**:

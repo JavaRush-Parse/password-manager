@@ -58,6 +58,13 @@
                     >
                         Edit
                     </button>
+
+                    <a th:href="@{/vault-item/audit/{id}(id=${vaultItem.id})}"
+                       class="btn-secondary">
+                        Audit
+                    </a>
+
+
                     <form th:action="@{/vault-item/delete/{id}(id=${vaultItem.id})}" th:method="delete"
                           onsubmit="return confirm('Are you sure you want to delete this item?');">
                         <button type="submit"

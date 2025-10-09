@@ -16,17 +16,34 @@ import ua.com.javarush.parse.m5.passwordmanager.repository.VaultItemRepository;
 public class VaultItemService {
 
   private final VaultItemRepository vaultItemRepository;
+  private final VaultAuditService vaultAuditService;
 
+  @Transactional
   public VaultItem save(VaultItem vaultItem) {
-    return vaultItemRepository.save(vaultItem);
+    VaultItem savedItem = vaultItemRepository.save(vaultItem);
+    vaultAuditService.logCreate(savedItem);
+    return savedItem;
   }
 
   @Transactional
-  public Optional<VaultItem> update(Long id, VaultItem updatedItemData) {
+  public Optional<VaultItem> update(VaultItem updatedItemData) {
+    long id = updatedItemData.getId();
+
     return vaultItemRepository
         .findById(id)
         .map(
             existingItem -> {
+              VaultItem oldItemCopy =
+                  VaultItem.builder()
+                      .id(existingItem.getId())
+                      .name(existingItem.getName())
+                      .resource(existingItem.getResource())
+                      .login(existingItem.getLogin())
+                      .description(existingItem.getDescription())
+                      .password(existingItem.getPassword())
+                      .collection(existingItem.getCollection())
+                      .build();
+
               existingItem.setName(updatedItemData.getName());
               existingItem.setResource(updatedItemData.getResource());
               existingItem.setLogin(updatedItemData.getLogin());
@@ -36,7 +53,10 @@ public class VaultItemService {
                   && !updatedItemData.getPassword().isEmpty()) {
                 existingItem.setPassword(updatedItemData.getPassword());
               }
-              return vaultItemRepository.save(existingItem);
+
+              VaultItem savedItem = vaultItemRepository.save(existingItem);
+              vaultAuditService.logUpdate(oldItemCopy, savedItem);
+              return savedItem;
             });
   }
 
@@ -108,7 +128,9 @@ public class VaultItemService {
     return vaultItemRepository.findVaultItemByCollectionName(collectionName);
   }
 
+  @Transactional
   public void deleteById(Long id) {
+    vaultAuditService.logDelete(id);
     vaultItemRepository.deleteById(id);
   }
 

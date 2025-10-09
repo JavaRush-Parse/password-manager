@@ -48,7 +48,7 @@ public class VaultItemController {
   public ResponseEntity<VaultItem> update(
       @PathVariable Long id, @RequestBody VaultItem updatedItemData) {
     return vaultItemService
-        .update(id, updatedItemData)
+        .update(updatedItemData)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }

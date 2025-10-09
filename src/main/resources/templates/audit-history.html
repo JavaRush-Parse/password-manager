@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}" lang="en">
+<head>
+    <title th:text="'Audit History - ' + ${vaultItem.name}">Audit History</title>
+</head>
+<body>
+<main layout:fragment="content">
+
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 mb-4">Audit History</h1>
+            <div class="border-b pb-4 mb-4">
+                <h2 class="text-lg font-semibold text-gray-700" th:text="'Item: ' + ${vaultItem.name}"></h2>
+                <p class="text-gray-600" th:text="'Resource: ' + ${vaultItem.resource}"></p>
+                <p class="text-gray-600" th:text="'Login: ' + ${vaultItem.login}"></p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Change History</h3>
+            </div>
+
+            <div th:if="${#lists.isEmpty(auditHistory)}" class="p-6 text-center text-gray-500">
+                No audit history found for this item.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(auditHistory)}" class="divide-y divide-gray-200">
+                <div th:each="audit : ${auditHistory}" class="p-6">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <span th:if="${audit.actionType.name() == 'CREATE'}"
+                                      th:text="${audit.actionType}"
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                </span>
+                                <span th:if="${audit.actionType.name() == 'UPDATE'}"
+                                      th:text="${audit.actionType}"
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                </span>
+                                <span th:if="${audit.actionType.name() == 'DELETE'}"
+                                      th:text="${audit.actionType}"
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                </span>
+                                <span th:if="${audit.fieldName != '*'}"
+                                      class="ml-2 text-sm font-medium text-gray-700"
+                                      th:text="'Field: ' + ${audit.fieldName}">
+                                </span>
+                            </div>
+
+                            <div th:if="${audit.actionType.name() == 'UPDATE' and audit.fieldName != '*'}"
+                                 class="text-sm text-gray-600 mb-2">
+                                <div th:if="${audit.oldValue}">
+                                    <span class="font-medium">From:</span>
+                                    <span th:text="${audit.oldValue}" class="text-red-600"></span>
+                                </div>
+                                <div th:if="${audit.newValue}">
+                                    <span class="font-medium">To:</span>
+                                    <span th:text="${audit.newValue}" class="text-green-600"></span>
+                                </div>
+                            </div>
+
+                            <div th:if="${audit.actionType.name() == 'CREATE'}"
+                                 class="text-sm text-gray-600 mb-2">
+                                <span class="font-medium">Item created with:</span>
+                                <div th:text="${audit.newValue}" class="text-green-600 mt-1"></div>
+                            </div>
+
+                            <div th:if="${audit.actionType.name() == 'DELETE'}"
+                                 class="text-sm text-gray-600 mb-2">
+                                <span class="font-medium text-red-600">Item deleted</span>
+                            </div>
+                        </div>
+
+                        <div class="ml-4 text-right">
+                            <div class="text-sm text-gray-500"
+                                 th:text="${#temporals.format(audit.changedAt, 'MMM dd, yyyy HH:mm:ss')}">
+                            </div>
+                            <div class="text-xs text-gray-400" th:text="'by ' + ${audit.changedBy}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <a th:href="@{/vault-item/{id}(id=${vaultItem.id})}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                ← Back to Vault
+            </a>
+        </div>
+    </div>
+</div>
+
+</main>
+</body>
+</html>

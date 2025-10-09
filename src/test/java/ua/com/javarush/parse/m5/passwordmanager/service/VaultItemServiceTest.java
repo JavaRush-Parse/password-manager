@@ -22,6 +22,7 @@ import ua.com.javarush.parse.m5.passwordmanager.repository.VaultItemRepository;
 class VaultItemServiceTest {
 
   @Mock private VaultItemRepository repository;
+  @Mock private VaultAuditService vaultAuditService;
 
   @InjectMocks private VaultItemService service;
 
@@ -38,6 +39,7 @@ class VaultItemServiceTest {
     // Then
     assertThat(saved).isNotNull();
     verify(repository).save(vaultItem);
+    verify(vaultAuditService).logCreate(saved);
   }
 
   @Test
@@ -51,23 +53,25 @@ class VaultItemServiceTest {
     existingItem.setName("Old Name");
 
     VaultItem updatedData = new VaultItem();
+    updatedData.setId(existingItem.getId());
     updatedData.setName("New Name");
     updatedData.setResource("Resource");
     updatedData.setLogin("Login");
     updatedData.setDescription("Description");
     updatedData.setPassword("password");
 
-    when(repository.findById(1L)).thenReturn(Optional.of(existingItem));
+    when(repository.findById(existingItem.getId())).thenReturn(Optional.of(existingItem));
     when(repository.save(any(VaultItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     // When
-    Optional<VaultItem> result = service.update(1L, updatedData);
+    Optional<VaultItem> result = service.update(updatedData);
 
     // Then
     assertThat(result).isPresent();
     assertThat(result.get().getName()).isEqualTo("New Name");
     verify(repository).findById(1L);
     verify(repository).save(existingItem);
+    verify(vaultAuditService).logUpdate(any(VaultItem.class), any(VaultItem.class));
   }
 
   @Test
@@ -123,6 +127,7 @@ class VaultItemServiceTest {
     service.deleteById(1L);
 
     // Then
+    verify(vaultAuditService).logDelete(1L);
     verify(repository).deleteById(1L);
   }
 
