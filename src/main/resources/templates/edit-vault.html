@@ -51,10 +51,11 @@
                         class="btn-primary">
                     Update Item
                 </button>
-                <a th:href="@{/}"
+                <button type="button"
+                   onclick="document.getElementById('modal-backdrop').remove()"
                    class="btn-secondary">
                     Cancel
-                </a>
+                </button>
             </div>
         </form>
     </th:block>
