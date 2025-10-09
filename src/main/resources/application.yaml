@@ -4,16 +4,6 @@ spring:
     active: ${SPRING_PROFILE:dev}
   application:
     name: password-manager
-  datasource:
-    url: jdbc:postgresql://localhost:5432/password-manager?currentSchema=public&serverTimezone=UTC
-    username: root
-    password: root
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 2
-      idle-timeout: 60000
-      pool-name: HikariCP
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,9 +16,11 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
-jwt:
-  secret: aVeryLongAndSecureSecretKeyForMyPasswordManagerApplicationThatNobodyShouldGuess
-  expiration: 3600000
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000
+      cache-null-values: false
 
 password-generator:
   length: 16

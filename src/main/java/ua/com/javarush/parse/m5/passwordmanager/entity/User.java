@@ -1,5 +1,7 @@
 package ua.com.javarush.parse.m5.passwordmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @SoftDelete
 @Table(name = "users")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +29,11 @@ public class User implements UserDetails {
   @Column(nullable = false, unique = true)
   private String email;
 
+  @JsonIgnore
   @Column(nullable = false)
   private String password;
 
+  @JsonIgnore
   @ManyToMany
   @JoinTable(
       name = "users_roles",

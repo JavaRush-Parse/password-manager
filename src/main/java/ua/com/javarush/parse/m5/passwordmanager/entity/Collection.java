@@ -1,5 +1,7 @@
 package ua.com.javarush.parse.m5.passwordmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -19,6 +21,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Collection {
 
   @Id
@@ -46,6 +49,7 @@ public class Collection {
 
   @UpdateTimestamp private Instant updatedAt;
 
+  @JsonIgnore
   @OneToMany(
       mappedBy = "collection",
       cascade = CascadeType.ALL,
