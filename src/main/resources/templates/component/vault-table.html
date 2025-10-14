@@ -2,58 +2,150 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <body>
 
-<div th:fragment="vaultTable(vaultItems)" id="vault-table-container" class="overflow-x-auto rounded border border-gray-300 shadow-sm container">
-    <table class="min-w-full divide-y-2 divide-gray-200">
+<div th:fragment="vaultTable" id="vault-table-container" class="rounded border border-gray-300 shadow-sm container">
+    <!-- Pagination Controls - Top -->
+    <div class="flex justify-between items-center px-4 py-3 bg-gray-50 border-b border-gray-300">
+        <div class="flex items-center space-x-2">
+            <label for="page-size" class="text-sm text-gray-700">Items per page:</label>
+            <select id="page-size"
+                    name="size"
+                    class="form-select rounded border-gray-300 text-sm"
+                    th:attr="hx-get=${query != null && query != '' ? '/vault-table-search?query=' + query : '/vault-table'},
+                            hx-include='#searchInput'"
+                    hx-target="#vault-table-container"
+                    hx-swap="outerHTML">
+                <option th:value="5" th:selected="${pageSize == 5}">5</option>
+                <option th:value="10" th:selected="${pageSize == 10}">10</option>
+                <option th:value="20" th:selected="${pageSize == 20}">20</option>
+                <option th:value="50" th:selected="${pageSize == 50}">50</option>
+                <option th:value="100" th:selected="${pageSize == 100}">100</option>
+            </select>
+        </div>
+        <div class="text-sm text-gray-700">
+            <span>Showing </span>
+            <span th:text="${currentPage * pageSize + 1}">1</span>
+            <span> to </span>
+            <span th:text="${(currentPage + 1) * pageSize < totalItems ? (currentPage + 1) * pageSize : totalItems}">10</span>
+            <span> of </span>
+            <span th:text="${totalItems}">0</span>
+            <span> items</span>
+        </div>
+    </div>
 
-        <thead class="ltr:text-left rtl:text-right">
-            <tr class="*:font-medium *:text-gray-900">
-                <th class="px-3 py-2 whitespace-nowrap">Name</th>
-                <th class="px-3 py-2 whitespace-nowrap">Resource</th>
-                <th class="px-3 py-2 whitespace-nowrap">Description</th>
-                <th class="px-3 py-2 whitespace-nowrap">Login</th>
-            </tr>
-        </thead>
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y-2 divide-gray-200">
+            <thead class="ltr:text-left rtl:text-right">
+                <tr class="*:font-medium *:text-gray-900">
+                    <th class="px-3 py-2 whitespace-nowrap">Name</th>
+                    <th class="px-3 py-2 whitespace-nowrap">Resource</th>
+                    <th class="px-3 py-2 whitespace-nowrap">Description</th>
+                    <th class="px-3 py-2 whitespace-nowrap">Login</th>
+                    <th class="px-3 py-2 whitespace-nowrap">Actions</th>
+                </tr>
+            </thead>
 
-    <tbody class="bg-white divide-y divide-gray-200">
-        <tr th:each="vaultItem : ${vaultItems}"  class="*:text-gray-900 *:first:font-medium">
-            <td class="px-3 py-2 whitespace-nowrap">
-                <a th:href="@{/vault-item/{id}(id=${vaultItem.id})}"
-                   th:text="${vaultItem.name}"
-                   class="text-gray-900 hover:underline">
-                </a>
-            </td>
-            <td th:text="${vaultItem.resource}" class="px-3 py-2 whitespace-nowrap"></td>
-            <td th:text="${vaultItem.description}" class="px-3 py-2 whitespace-nowrap"></td>
-            <td th:text="${vaultItem.login}" class="px-3 py-2 whitespace-nowrap"></td>
-            <td class="px-3 py-2 whitespace-nowrap">
-                <button hx:get="@{/vault-item/edit/{id}(id=${vaultItem.id})}"
-                    hx-target="body"
-                    hx-swap="beforeend"
-                    class="btn-secondary"
-                    >
-                    Edit
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="vaultItem : ${vaultItems}" class="*:text-gray-900 *:first:font-medium">
+                    <td class="px-3 py-2 whitespace-nowrap">
+                        <a th:href="@{/vault-item/{id}(id=${vaultItem.id})}"
+                           th:text="${vaultItem.name}"
+                           class="text-gray-900 hover:underline">
+                        </a>
+                    </td>
+                    <td th:text="${vaultItem.resource}" class="px-3 py-2 whitespace-nowrap"></td>
+                    <td th:text="${vaultItem.description}" class="px-3 py-2 whitespace-nowrap"></td>
+                    <td th:text="${vaultItem.login}" class="px-3 py-2 whitespace-nowrap"></td>
+                    <td class="px-3 py-2 whitespace-nowrap">
+                        <button hx:get="@{/vault-item/edit/{id}(id=${vaultItem.id})}"
+                            hx-target="body"
+                            hx-swap="beforeend"
+                            class="btn-secondary">
+                            Edit
+                        </button>
+<!--                        <button hx-get=@{/vault-item/audit-modal/{id}(id=${vaultItem.id})}-->
+<!--                                hx-target="#modal-placeholder"-->
+<!--                                class="px-3 py-2 whitespace-nowrap ml-2 text-green-600 hover:underline bg-transparent border-0 cursor-pointer">-->
+<!--                            View History-->
+<!--                        </button>-->
+                        <form th:action="@{/vault-item/delete/{id}(id=${vaultItem.id})}"
+                              th:method="delete"
+                              class="inline-block ml-2"
+                              onsubmit="return confirm('Are you sure you want to delete this item?');">
+                            <button type="submit"
+                                    class="inline-block rounded px-3 py-2 text-xm font-medium text-black
+                                   border-2 border-transparent transition-colors
+                                   hover:border-red-700">
+                                Remove
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(vaultItems)}">
+                    <td colspan="5" class="px-3 py-8 text-center text-gray-500">
+                        No items found
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls - Bottom -->
+    <div class="flex justify-center items-center px-4 py-3 bg-gray-50 border-t border-gray-300 text-sm">
+        <nav class="flex flex-wrap gap-3" aria-label="Pagination">
+            <button th:if="${currentPage > 0}"
+                    th:attr="hx-get=${query != null && query != '' ? 
+                        '/vault-table-search?query=' + query + '&page=' + (currentPage - 1) + '&size=' + pageSize : 
+                        '/vault-table?page=' + (currentPage - 1) + '&size=' + pageSize}"
+                    hx-target="#vault-table-container"
+                    hx-swap="outerHTML"
+                    class="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors">
+                <b><</b>
+            </button>
+            <button th:if="${currentPage == 0}"
+                    disabled
+                    class="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm font-bold text-gray-400 cursor-not-allowed">
+                <b><</b>
+            </button>
+
+            <!-- Page Numbers -->
+            <th:block th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
+                <button th:if="${pageNum == currentPage}"
+                        class="relative inline-flex items-center px-4 py-2 rounded-md border border-gray-300 bg-blue-600 text-sm font-bold text-white shadow-sm">
+                    <span th:text="${pageNum + 1}">1</span>
                 </button>
-<!--                <button hx-get=@{/vault-item/audit-modal/{id}(id=${vaultItem.id})}-->
-<!--                        hx-target="#modal-placeholder"-->
-<!--                        class="px-3 py-2 whitespace-nowrap ml-2 text-green-600 hover:underline bg-transparent border-0 cursor-pointer">-->
-<!--                    View History-->
-<!--                </button>-->
-                <form th:action="@{/vault-item/delete/{id}(id=${vaultItem.id})}"
-                      th:method="delete"
-                      class="inline-block ml-2"
-                onsubmit="return confirm('Are you sure you want to delete this item?');">
-
-                <button type="submit"
-                        class="inline-block rounded px-3 py-2 text-xm font-medium text-black
-                       border-2 border-transparent transition-colors
-                       hover:border-red-700">
-                    Remove
+                <button th:if="${pageNum != currentPage && (pageNum == 0 || pageNum == totalPages - 1 || (pageNum >= currentPage - 2 && pageNum <= currentPage + 2))}"
+                        th:attr="hx-get=${query != null && query != '' ? 
+                            '/vault-table-search?query=' + query + '&page=' + pageNum + '&size=' + pageSize : 
+                            '/vault-table?page=' + pageNum + '&size=' + pageSize}"
+                        hx-target="#vault-table-container"
+                        hx-swap="outerHTML"
+                        class="relative inline-flex items-center px-4 py-2 rounded-md border border-gray-300 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors">
+                    <span th:text="${pageNum + 1}">1</span>
                 </button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <span th:if="${pageNum != currentPage && pageNum != 0 && pageNum != totalPages - 1 && (pageNum == currentPage - 3 || pageNum == currentPage + 3)}"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-bold text-gray-700">
+                    ...
+                </span>
+            </th:block>
+
+            <!-- Next Button -->
+            <button th:if="${currentPage < totalPages - 1}"
+                    th:attr="hx-get=${query != null && query != '' ? 
+                        '/vault-table-search?query=' + query + '&page=' + (currentPage + 1) + '&size=' + pageSize : 
+                        '/vault-table?page=' + (currentPage + 1) + '&size=' + pageSize}"
+                    hx-target="#vault-table-container"
+                    hx-swap="outerHTML"
+                    class="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors">
+                <b>></b>
+            </button>
+            <button th:if="${currentPage >= totalPages - 1}"
+                    disabled
+                    class="relative inline-flex items-center px-3 py-2 rounded-md border border-gray-300 bg-gray-100 text-sm font-bold text-gray-400 cursor-not-allowed">
+                <b>></b>
+            </button>
+        </nav>
+    </div>
 </div>
 
 </body>

@@ -4,10 +4,14 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import ua.com.javarush.parse.m5.passwordmanager.dto.PageResponse;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItemIdentifier;
 import ua.com.javarush.parse.m5.passwordmanager.exception.VaultItemImportException;
@@ -151,5 +155,28 @@ public class VaultItemService {
       return vaultItemRepository.findAll();
     }
     return vaultItemRepository.searchByNameResourceOrLogin(searchTerm);
+  }
+
+  @Transactional(readOnly = true)
+  @Cacheable(value = "vault-items", key = "'page:' + #page + ':size:' + #size")
+  public PageResponse<VaultItem> findAllPaginated(int page, int size) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+    Page<VaultItem> vaultItemPage = vaultItemRepository.findAll(pageable);
+    return PageResponse.of(vaultItemPage);
+  }
+
+  @Transactional(readOnly = true)
+  @Cacheable(
+      value = "vault-items",
+      key = "'search:' + #searchTerm + ':page:' + #page + ':size:' + #size")
+  public PageResponse<VaultItem> searchPaginated(String searchTerm, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+    Page<VaultItem> vaultItemPage;
+    if (searchTerm == null || searchTerm.isBlank()) {
+      vaultItemPage = vaultItemRepository.findAll(pageable);
+    } else {
+      vaultItemPage = vaultItemRepository.searchByNameResourceOrLogin(searchTerm, pageable);
+    }
+    return PageResponse.of(vaultItemPage);
   }
 }
