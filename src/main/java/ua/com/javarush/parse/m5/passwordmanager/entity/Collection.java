@@ -49,6 +49,11 @@ public class Collection {
 
   @UpdateTimestamp private Instant updatedAt;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "owner_id", nullable = false)
+  @JsonIgnore
+  private User owner;
+
   @JsonIgnore
   @OneToMany(
       mappedBy = "collection",

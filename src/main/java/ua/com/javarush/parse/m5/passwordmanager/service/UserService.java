@@ -3,6 +3,8 @@ package ua.com.javarush.parse.m5.passwordmanager.service;
 import jakarta.transaction.Transactional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ua.com.javarush.parse.m5.passwordmanager.dto.user.UserRegistrationRequestDto;
@@ -41,5 +43,17 @@ public class UserService {
 
     User savedUser = userRepository.save(user);
     return userMapper.toDto(savedUser);
+  }
+
+  public User getCurrentUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !authentication.isAuthenticated()) {
+      throw new RuntimeException("No authenticated user found");
+    }
+
+    String email = authentication.getName();
+    return userRepository
+        .findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found: " + email));
   }
 }
