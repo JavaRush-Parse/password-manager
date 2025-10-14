@@ -21,7 +21,10 @@ public class CollectionService extends BaseUserAwareService {
     this.collectionRepository = collectionRepository;
   }
 
-  @Cacheable(value = "collections", key = "'user:' + getCurrentUserId()")
+  @Cacheable(
+          value = "collections",
+          key =
+                  "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name")
   public List<Collection> findAll() {
         return collectionRepository.findByOwner(getCurrentUser(), Sort.by(Sort.Direction.ASC, "id"));
   }
