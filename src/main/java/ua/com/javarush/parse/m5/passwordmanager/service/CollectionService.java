@@ -2,7 +2,6 @@ package ua.com.javarush.parse.m5.passwordmanager.service;
 
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
@@ -10,21 +9,21 @@ import org.springframework.stereotype.Service;
 import ua.com.javarush.parse.m5.passwordmanager.entity.Collection;
 import ua.com.javarush.parse.m5.passwordmanager.entity.User;
 import ua.com.javarush.parse.m5.passwordmanager.repository.CollectionRepository;
+import ua.com.javarush.parse.m5.passwordmanager.repository.user.UserRepository;
 
 @Service
-@RequiredArgsConstructor
-public class CollectionService {
+public class CollectionService extends BaseUserAwareService {
 
   private final CollectionRepository collectionRepository;
-  private final UserService userService;
 
-  @Cacheable(
-      value = "collections",
-      key =
-          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name")
+  public CollectionService(UserRepository userRepository, CollectionRepository collectionRepository) {
+    super(userRepository);
+    this.collectionRepository = collectionRepository;
+  }
+
+  @Cacheable(value = "collections", key = "'user:' + getCurrentUserId()")
   public List<Collection> findAll() {
-    User currentUser = userService.getCurrentUser();
-    return collectionRepository.findByOwner(currentUser, Sort.by(Sort.Direction.ASC, "id"));
+        return collectionRepository.findByOwner(getCurrentUser(), Sort.by(Sort.Direction.ASC, "id"));
   }
 
   @Cacheable(
@@ -32,21 +31,18 @@ public class CollectionService {
       key =
           "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':id:' + #id")
   public Optional<Collection> findById(Long id) {
-    User currentUser = userService.getCurrentUser();
-    return collectionRepository.findByIdAndOwner(id, currentUser);
+        return collectionRepository.findByIdAndOwner(id, getCurrentUser());
   }
 
   @CacheEvict(value = "collections", allEntries = true)
   public Collection save(Collection collection) {
-    User currentUser = userService.getCurrentUser();
-    collection.setOwner(currentUser);
+        collection.setOwner(getCurrentUser());
     return collectionRepository.save(collection);
   }
 
   @CacheEvict(value = "collections", allEntries = true)
   public void deleteById(Long id) {
-    User currentUser = userService.getCurrentUser();
-    Optional<Collection> collection = collectionRepository.findByIdAndOwner(id, currentUser);
+        Optional<Collection> collection = collectionRepository.findByIdAndOwner(id, getCurrentUser());
     if (collection.isPresent()) {
       collectionRepository.deleteById(id);
     } else {
@@ -55,8 +51,7 @@ public class CollectionService {
   }
 
   public boolean existsByName(String name) {
-    User currentUser = userService.getCurrentUser();
-    return collectionRepository.existsByNameIgnoreCaseAndOwner(name, currentUser);
+        return collectionRepository.existsByNameIgnoreCaseAndOwner(name, getCurrentUser());
   }
 
   @Cacheable(
@@ -64,15 +59,13 @@ public class CollectionService {
       key =
           "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':name:' + #name")
   public Optional<Collection> findByName(String name) {
-    User currentUser = userService.getCurrentUser();
-    return collectionRepository.findByNameIgnoreCaseAndOwner(name, currentUser);
+        return collectionRepository.findByNameIgnoreCaseAndOwner(name, getCurrentUser());
   }
 
   @CacheEvict(value = "collections", allEntries = true)
   public Optional<Collection> update(Long id, Collection updatedCollectionData) {
-    User currentUser = userService.getCurrentUser();
-    return collectionRepository
-        .findByIdAndOwner(id, currentUser)
+        return collectionRepository
+        .findByIdAndOwner(id, getCurrentUser())
         .map(
             existingCollection -> {
               existingCollection.setName(updatedCollectionData.getName());

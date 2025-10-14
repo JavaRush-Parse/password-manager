@@ -1,30 +1,38 @@
 package ua.com.javarush.parse.m5.passwordmanager.service;
 
 import java.util.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import ua.com.javarush.parse.m5.passwordmanager.entity.User;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItemIdentifier;
 import ua.com.javarush.parse.m5.passwordmanager.exception.VaultItemImportException;
 import ua.com.javarush.parse.m5.passwordmanager.repository.VaultItemRepository;
+import ua.com.javarush.parse.m5.passwordmanager.repository.user.UserRepository;
 
 @Service
-@RequiredArgsConstructor
-public class VaultItemService {
+public class VaultItemService extends BaseUserAwareService {
 
   private final VaultItemRepository vaultItemRepository;
   private final VaultAuditService vaultAuditService;
-  private final UserService userService;
+
+  public VaultItemService(
+      UserRepository userRepository,
+      VaultItemRepository vaultItemRepository,
+      VaultAuditService vaultAuditService) {
+    super(userRepository);
+    this.vaultItemRepository = vaultItemRepository;
+    this.vaultAuditService = vaultAuditService;
+  }
 
   @Transactional
   @CacheEvict(value = "vault-items", allEntries = true)
   public VaultItem save(VaultItem vaultItem) {
-    vaultItem.setOwner(userService.getCurrentUser());
+    vaultItem.setOwner(getCurrentUser());
     VaultItem savedItem = vaultItemRepository.save(vaultItem);
     vaultAuditService.logCreate(savedItem);
     return savedItem;
@@ -34,7 +42,7 @@ public class VaultItemService {
   @CacheEvict(value = "vault-items", allEntries = true)
   public Optional<VaultItem> update(VaultItem updatedItemData) {
     long id = updatedItemData.getId();
-    var currentUser = userService.getCurrentUser();
+    User currentUser = getCurrentUser();
 
     return vaultItemRepository
         .findByIdAndOwner(id, currentUser)
@@ -75,7 +83,7 @@ public class VaultItemService {
           key =
                   "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name")
   public List<VaultItem> findAll() {
-    return vaultItemRepository.findAllByOwner(userService.getCurrentUser(), Sort.by(Sort.Direction.ASC, "id"));
+    return vaultItemRepository.findAllByOwner(getCurrentUser(), Sort.by(Sort.Direction.ASC, "id"));
   }
 
   @org.springframework.transaction.annotation.Transactional(
@@ -107,7 +115,7 @@ public class VaultItemService {
         seen.add(identifier);
       }
       if (vaultItemRepository.existsByResourceAndLoginAndOwner(
-          vaultItem.getResource(), vaultItem.getLogin(), userService.getCurrentUser())) {
+          vaultItem.getResource(), vaultItem.getLogin(), getCurrentUser())) {
         errors.add(
             "Entry already exists in database: "
                 + vaultItem.getName()
@@ -122,39 +130,39 @@ public class VaultItemService {
       throw new VaultItemImportException(errors);
     }
 
-    var currentUser = userService.getCurrentUser();
+    User currentUser = getCurrentUser();
     vaultItems.forEach(item -> item.setOwner(currentUser));
     return vaultItemRepository.saveAll(vaultItems);
   }
 
   @Cacheable(value = "vault-items", key = "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':id:' + #id")
   public Optional<VaultItem> findById(Long id) {
-    var currentUser = userService.getCurrentUser();
+    User currentUser = getCurrentUser();
     return vaultItemRepository.findByIdAndOwner(id, currentUser);
   }
 
   @Cacheable(value = "vault-items", key = "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':login:' + #login")
   public List<VaultItem> findByLogin(String login) {
-    var currentUser = userService.getCurrentUser();
+    User currentUser = getCurrentUser();
     return vaultItemRepository.findVaultItemByLoginAndOwner(login, currentUser);
   }
 
   @Cacheable(value = "vault-items", key = "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':resource:' + #resource")
   public List<VaultItem> findByResource(String resource) {
-    var currentUser = userService.getCurrentUser();
+    User currentUser = getCurrentUser();
     return vaultItemRepository.findVaultItemByResourceAndOwner(resource, currentUser);
   }
 
   @Cacheable(value = "vault-items", key = "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':collection:' + #collectionName")
   public List<VaultItem> findByCollectionName(String collectionName) {
-    var currentUser = userService.getCurrentUser();
+    User currentUser = getCurrentUser();
     return vaultItemRepository.findVaultItemByCollectionNameAndOwner(collectionName, currentUser);
   }
 
   @Transactional
   @CacheEvict(value = "vault-items", allEntries = true)
   public void deleteById(Long id) {
-    var currentUser = userService.getCurrentUser();
+    User currentUser = getCurrentUser();
     var vaultItem = vaultItemRepository.findByIdAndOwner(id, currentUser);
     if (vaultItem.isPresent()) {
       vaultAuditService.logDelete(id);
@@ -167,7 +175,7 @@ public class VaultItemService {
   @Transactional(readOnly = true)
   @Cacheable(value = "vault-items", key = "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':search:' + #searchTerm")
   public List<VaultItem> search(String searchTerm) {
-    var currentUser = userService.getCurrentUser();
+    User currentUser = getCurrentUser();
     if (searchTerm == null || searchTerm.isBlank()) {
       return vaultItemRepository.findAllByOwner(currentUser, Sort.by(Sort.Direction.ASC, "id"));
     }
