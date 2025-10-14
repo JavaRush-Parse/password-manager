@@ -12,6 +12,10 @@
         <div class="flex flex-1 items-center justify-end md:justify-between">
             <nav aria-label="Global" class="hidden md:block">
                 <ul class="flex items-center gap-6 text-sm">
+                    <li sec:authorize="isAuthenticated()">
+                        <a class="text-gray-500 transition hover:text-gray-500/75" th:href="@{/vault}"> My Vault </a>
+                    </li>
+
                     <li>
                         <a class="text-gray-500 transition hover:text-gray-500/75" href="#"> About </a>
                     </li>

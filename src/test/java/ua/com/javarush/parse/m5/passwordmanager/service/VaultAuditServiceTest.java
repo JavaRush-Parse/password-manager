@@ -13,10 +13,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import ua.com.javarush.parse.m5.passwordmanager.entity.Collection;
+import ua.com.javarush.parse.m5.passwordmanager.entity.User;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultAudit;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.repository.VaultAuditRepository;
@@ -26,17 +24,19 @@ public class VaultAuditServiceTest {
 
   @Mock private VaultAuditRepository vaultAuditRepository;
 
-  @Mock private SecurityContext securityContext;
-
-  @Mock private Authentication authentication;
+  @Mock private UserService userService;
 
   @InjectMocks private VaultAuditService vaultAuditService;
 
   private VaultItem testVaultItem;
   private Collection testCollection;
+  private User testUser;
 
   @BeforeEach
   void setUp() {
+    testUser = new User();
+    testUser.setId(1L);
+    testUser.setEmail("test@example.com");
     testCollection = new Collection();
     testCollection.setId(1L);
     testCollection.setName("Test Collection");
@@ -51,14 +51,11 @@ public class VaultAuditServiceTest {
             .password("testpassword")
             .collection(testCollection)
             .build();
-
-    SecurityContextHolder.setContext(securityContext);
   }
 
   @Test
   void logCreate_ShouldSaveAuditLogWithCreateAction() {
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getName()).thenReturn("test@example.com");
+    when(userService.getCurrentUser()).thenReturn(testUser);
 
     vaultAuditService.logCreate(testVaultItem);
 
@@ -77,8 +74,7 @@ public class VaultAuditServiceTest {
 
   @Test
   void logUpdate_ShouldSaveAuditLogsForChangedFields() {
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getName()).thenReturn("test@example.com");
+    when(userService.getCurrentUser()).thenReturn(testUser);
     VaultItem oldItem =
         VaultItem.builder()
             .id(1L)
@@ -108,8 +104,7 @@ public class VaultAuditServiceTest {
 
   @Test
   void logUpdate_WithPasswordChange_ShouldMaskPasswords() {
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getName()).thenReturn("test@example.com");
+    when(userService.getCurrentUser()).thenReturn(testUser);
     VaultItem oldItem =
         VaultItem.builder()
             .id(1L)
@@ -152,8 +147,7 @@ public class VaultAuditServiceTest {
 
   @Test
   void logDelete_ShouldSaveAuditLogWithDeleteAction() {
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getName()).thenReturn("test@example.com");
+    when(userService.getCurrentUser()).thenReturn(testUser);
 
     vaultAuditService.logDelete(1L);
 
@@ -209,8 +203,7 @@ public class VaultAuditServiceTest {
 
   @Test
   void logUpdate_WithCollectionChange_ShouldLogCollectionNames() {
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    when(authentication.getName()).thenReturn("test@example.com");
+    when(userService.getCurrentUser()).thenReturn(testUser);
     Collection oldCollection = new Collection();
     oldCollection.setId(1L);
     oldCollection.setName("Old Collection");
@@ -254,7 +247,7 @@ public class VaultAuditServiceTest {
 
   @Test
   void getCurrentUser_WithNoAuthentication_ShouldReturnSystem() {
-    when(securityContext.getAuthentication()).thenReturn(null);
+    when(userService.getCurrentUser()).thenThrow(new RuntimeException("No authentication"));
 
     vaultAuditService.logCreate(testVaultItem);
 

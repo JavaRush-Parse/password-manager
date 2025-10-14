@@ -30,6 +30,11 @@ public class VaultItem {
 
   private String password;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "owner_id", nullable = false)
+  @JsonIgnore
+  private User owner;
+
   @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "collection_id")

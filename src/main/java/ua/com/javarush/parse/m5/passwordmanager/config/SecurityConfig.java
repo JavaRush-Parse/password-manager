@@ -57,7 +57,7 @@ public class SecurityConfig {
                         "/main.css",
                         "/img/**",
                         "/csrf-config.js")
-                    .permitAll() // API для регистрации/входа
+                    .permitAll() // Public pages and static resources
                     .requestMatchers(SWAGGER_WHITELIST)
                     .permitAll()
                     .anyRequest()
@@ -67,7 +67,7 @@ public class SecurityConfig {
                 e.defaultAuthenticationEntryPointFor(
                     customAuthenticationEntryPoint,
                     request -> request.getServletPath().startsWith("/api/")))
-        .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/", true).permitAll())
+        .formLogin(form -> form.loginPage("/login").defaultSuccessUrl("/vault", true).permitAll())
         .logout(logout -> logout.logoutSuccessUrl("/").permitAll())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .sessionManagement(

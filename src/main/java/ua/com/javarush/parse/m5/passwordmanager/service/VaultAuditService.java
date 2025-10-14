@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultAudit;
@@ -17,6 +15,7 @@ import ua.com.javarush.parse.m5.passwordmanager.repository.VaultAuditRepository;
 public class VaultAuditService {
 
   private final VaultAuditRepository vaultAuditRepository;
+  private final UserService userService;
 
   @Transactional
   public void logCreate(VaultItem vaultItem) {
@@ -121,8 +120,11 @@ public class VaultAuditService {
   }
 
   private String getCurrentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication != null ? authentication.getName() : "system";
+    try {
+      return userService.getCurrentUser().getEmail();
+    } catch (Exception e) {
+      return "system";
+    }
   }
 
   private String buildItemSnapshot(VaultItem item) {
