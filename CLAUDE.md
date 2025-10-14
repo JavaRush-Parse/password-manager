@@ -76,3 +76,6 @@ This is a Spring Boot 3.5.5 password manager application with a layered architec
 - Basic Spring Boot test structure in place
 - JaCoCo configured for coverage reporting
 - Security test dependencies included
+
+## Git Commit Guidelines
+- Do not include claude postfix in the commit messages
