@@ -46,8 +46,8 @@ class VaultItemServiceTest {
     // Setup security context
     SecurityContextHolder.setContext(securityContext);
     UsernamePasswordAuthenticationToken authentication =
-        new UsernamePasswordAuthenticationToken("test@example.com", "password",
-            List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        new UsernamePasswordAuthenticationToken(
+            "test@example.com", "password", List.of(new SimpleGrantedAuthority("ROLE_USER")));
     when(securityContext.getAuthentication()).thenReturn(authentication);
     when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
   }
@@ -57,7 +57,7 @@ class VaultItemServiceTest {
   void whenSave_thenRepositorySaveIsCalled() {
     // Given
     VaultItem vaultItem = new VaultItem();
-        when(repository.save(any(VaultItem.class))).thenReturn(vaultItem);
+    when(repository.save(any(VaultItem.class))).thenReturn(vaultItem);
 
     // When
     VaultItem saved = service.save(vaultItem);
@@ -87,7 +87,8 @@ class VaultItemServiceTest {
     updatedData.setDescription("Description");
     updatedData.setPassword("password");
 
-        when(repository.findByIdAndOwner(existingItem.getId(), testUser)).thenReturn(Optional.of(existingItem));
+    when(repository.findByIdAndOwner(existingItem.getId(), testUser))
+        .thenReturn(Optional.of(existingItem));
     when(repository.save(any(VaultItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     // When
@@ -105,7 +106,8 @@ class VaultItemServiceTest {
   @DisplayName("Verify repository's findAll method is called on findAll")
   void whenFindAll_thenRepositoryFindAllIsCalled() {
     // Given
-        when(repository.findAllByOwner(eq(testUser), any(Sort.class))).thenReturn(List.of(new VaultItem(), new VaultItem()));
+    when(repository.findAllByOwner(eq(testUser), any(Sort.class)))
+        .thenReturn(List.of(new VaultItem(), new VaultItem()));
 
     // When
     List<VaultItem> result = service.findAll();
@@ -120,7 +122,7 @@ class VaultItemServiceTest {
   void whenFindById_thenRepositoryFindByIdIsCalled() {
     // Given
     VaultItem vaultItem = new VaultItem();
-        when(repository.findByIdAndOwner(1L, testUser)).thenReturn(Optional.of(vaultItem));
+    when(repository.findByIdAndOwner(1L, testUser)).thenReturn(Optional.of(vaultItem));
 
     // When
     Optional<VaultItem> result = service.findById(1L);
@@ -134,7 +136,8 @@ class VaultItemServiceTest {
   @DisplayName("Verify repository's findVaultItemByLogin method is called on findByLogin")
   void whenFindByLogin_thenRepositoryFindVaultItemByLoginIsCalled() {
     // Given
-        when(repository.findVaultItemByLoginAndOwner("testuser", testUser)).thenReturn(List.of(new VaultItem()));
+    when(repository.findVaultItemByLoginAndOwner("testuser", testUser))
+        .thenReturn(List.of(new VaultItem()));
 
     // When
     List<VaultItem> result = service.findByLogin("testuser");
@@ -149,7 +152,7 @@ class VaultItemServiceTest {
   void whenDeleteById_thenRepositoryDeleteByIdIsCalled() {
     // Given
     VaultItem vaultItem = new VaultItem();
-        when(repository.findByIdAndOwner(1L, testUser)).thenReturn(Optional.of(vaultItem));
+    when(repository.findByIdAndOwner(1L, testUser)).thenReturn(Optional.of(vaultItem));
     doNothing().when(repository).deleteById(1L);
 
     // When
@@ -175,7 +178,8 @@ class VaultItemServiceTest {
 
     List<VaultItem> items = List.of(item1, item2);
 
-        when(repository.existsByResourceAndLoginAndOwner(anyString(), anyString(), eq(testUser))).thenReturn(false);
+    when(repository.existsByResourceAndLoginAndOwner(anyString(), anyString(), eq(testUser)))
+        .thenReturn(false);
     when(repository.saveAll(items)).thenReturn(items);
 
     // When
@@ -194,7 +198,7 @@ class VaultItemServiceTest {
     item.setLogin("");
     item.setResource("resource");
     List<VaultItem> items = List.of(item);
-    
+
     // When & Then
     assertThrows(VaultItemImportException.class, () -> service.importVaultItems(items));
   }
@@ -207,7 +211,7 @@ class VaultItemServiceTest {
     item.setLogin("login");
     item.setResource("");
     List<VaultItem> items = List.of(item);
-    
+
     // When & Then
     assertThrows(VaultItemImportException.class, () -> service.importVaultItems(items));
   }
@@ -225,7 +229,7 @@ class VaultItemServiceTest {
     item2.setResource("resource");
 
     List<VaultItem> items = List.of(item1, item2);
-    
+
     // When & Then
     assertThrows(VaultItemImportException.class, () -> service.importVaultItems(items));
   }
@@ -238,7 +242,8 @@ class VaultItemServiceTest {
     item.setLogin("login");
     item.setResource("resource");
     List<VaultItem> items = List.of(item);
-        when(repository.existsByResourceAndLoginAndOwner("resource", "login", testUser)).thenReturn(true);
+    when(repository.existsByResourceAndLoginAndOwner("resource", "login", testUser))
+        .thenReturn(true);
 
     // When & Then
     assertThrows(VaultItemImportException.class, () -> service.importVaultItems(items));

@@ -6,27 +6,32 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import ua.com.javarush.parse.m5.passwordmanager.entity.Collection;
 import ua.com.javarush.parse.m5.passwordmanager.entity.User;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultAudit;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.repository.VaultAuditRepository;
+import ua.com.javarush.parse.m5.passwordmanager.repository.user.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class VaultAuditServiceTest {
 
   @Mock private VaultAuditRepository vaultAuditRepository;
+  @Mock private UserRepository userRepository;
+  @Mock private SecurityContext securityContext;
 
-  @Mock private UserService userService;
-
-  @InjectMocks private VaultAuditService vaultAuditService;
+  private VaultAuditService vaultAuditService;
 
   private VaultItem testVaultItem;
   private Collection testCollection;
@@ -51,11 +56,19 @@ public class VaultAuditServiceTest {
             .password("testpassword")
             .collection(testCollection)
             .build();
+
+    vaultAuditService = new VaultAuditService(userRepository, vaultAuditRepository);
+    SecurityContextHolder.setContext(securityContext);
   }
 
   @Test
   void logCreate_ShouldSaveAuditLogWithCreateAction() {
-    when(userService.getCurrentUser()).thenReturn(testUser);
+    // Mock authentication
+    UsernamePasswordAuthenticationToken authentication =
+        new UsernamePasswordAuthenticationToken(
+            "test@example.com", null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+    when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
 
     vaultAuditService.logCreate(testVaultItem);
 
@@ -74,7 +87,6 @@ public class VaultAuditServiceTest {
 
   @Test
   void logUpdate_ShouldSaveAuditLogsForChangedFields() {
-    when(userService.getCurrentUser()).thenReturn(testUser);
     VaultItem oldItem =
         VaultItem.builder()
             .id(1L)
@@ -104,7 +116,6 @@ public class VaultAuditServiceTest {
 
   @Test
   void logUpdate_WithPasswordChange_ShouldMaskPasswords() {
-    when(userService.getCurrentUser()).thenReturn(testUser);
     VaultItem oldItem =
         VaultItem.builder()
             .id(1L)
@@ -147,7 +158,12 @@ public class VaultAuditServiceTest {
 
   @Test
   void logDelete_ShouldSaveAuditLogWithDeleteAction() {
-    when(userService.getCurrentUser()).thenReturn(testUser);
+    // Mock authentication
+    UsernamePasswordAuthenticationToken authentication =
+        new UsernamePasswordAuthenticationToken(
+            "test@example.com", null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+    when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
 
     vaultAuditService.logDelete(1L);
 
@@ -203,7 +219,6 @@ public class VaultAuditServiceTest {
 
   @Test
   void logUpdate_WithCollectionChange_ShouldLogCollectionNames() {
-    when(userService.getCurrentUser()).thenReturn(testUser);
     Collection oldCollection = new Collection();
     oldCollection.setId(1L);
     oldCollection.setName("Old Collection");
@@ -247,7 +262,8 @@ public class VaultAuditServiceTest {
 
   @Test
   void getCurrentUser_WithNoAuthentication_ShouldReturnSystem() {
-    when(userService.getCurrentUser()).thenThrow(new RuntimeException("No authentication"));
+    // Setup a failing authentication scenario
+    when(securityContext.getAuthentication()).thenReturn(null);
 
     vaultAuditService.logCreate(testVaultItem);
 
