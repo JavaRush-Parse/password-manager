@@ -15,7 +15,8 @@ public class VaultAuditService extends BaseUserAwareService {
 
   private final VaultAuditRepository vaultAuditRepository;
 
-  public VaultAuditService(UserRepository userRepository, VaultAuditRepository vaultAuditRepository) {
+  public VaultAuditService(
+      UserRepository userRepository, VaultAuditRepository vaultAuditRepository) {
     super(userRepository);
     this.vaultAuditRepository = vaultAuditRepository;
   }
