@@ -77,7 +77,10 @@ public class VaultItemService extends BaseUserAwareService {
   }
 
   @Transactional(readOnly = true)
-  @Cacheable(value = "vault-items", key = "'user:' + getCurrentUserEmail()")
+  @Cacheable(
+      value = "vault-items",
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name")
   public List<VaultItem> findAll() {
     return vaultItemRepository.findAllByOwner(getCurrentUser(), Sort.by(Sort.Direction.ASC, "id"));
   }
@@ -131,13 +134,19 @@ public class VaultItemService extends BaseUserAwareService {
     return vaultItemRepository.saveAll(vaultItems);
   }
 
-  @Cacheable(value = "vault-items", key = "'user:' + getCurrentUserEmail() + ':id:' + #id")
+  @Cacheable(
+      value = "vault-items",
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':id:' + #id")
   public Optional<VaultItem> findById(Long id) {
     User currentUser = getCurrentUser();
     return vaultItemRepository.findByIdAndOwner(id, currentUser);
   }
 
-  @Cacheable(value = "vault-items", key = "'user:' + getCurrentUserEmail() + ':login:' + #login")
+  @Cacheable(
+      value = "vault-items",
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':login:' + #login")
   public List<VaultItem> findByLogin(String login) {
     User currentUser = getCurrentUser();
     return vaultItemRepository.findVaultItemByLoginAndOwner(login, currentUser);
@@ -145,7 +154,8 @@ public class VaultItemService extends BaseUserAwareService {
 
   @Cacheable(
       value = "vault-items",
-      key = "'user:' + getCurrentUserEmail() + ':resource:' + #resource")
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':resource:' + #resource")
   public List<VaultItem> findByResource(String resource) {
     User currentUser = getCurrentUser();
     return vaultItemRepository.findVaultItemByResourceAndOwner(resource, currentUser);
@@ -153,7 +163,8 @@ public class VaultItemService extends BaseUserAwareService {
 
   @Cacheable(
       value = "vault-items",
-      key = "'user:' + getCurrentUserEmail() + ':collection:' + #collectionName")
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':collection:' + #collectionName")
   public List<VaultItem> findByCollectionName(String collectionName) {
     User currentUser = getCurrentUser();
     return vaultItemRepository.findVaultItemByCollectionNameAndOwner(collectionName, currentUser);
@@ -175,7 +186,8 @@ public class VaultItemService extends BaseUserAwareService {
   @Transactional(readOnly = true)
   @Cacheable(
       value = "vault-items",
-      key = "'user:' + getCurrentUserEmail() + ':search:' + #searchTerm")
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':search:' + #searchTerm")
   public List<VaultItem> search(String searchTerm) {
     User currentUser = getCurrentUser();
     if (searchTerm == null || searchTerm.isBlank()) {

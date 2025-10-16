@@ -21,12 +21,18 @@ public class CollectionService extends BaseUserAwareService {
     this.collectionRepository = collectionRepository;
   }
 
-  @Cacheable(value = "collections", key = "'user:' + getCurrentUserEmail()")
+  @Cacheable(
+      value = "collections",
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name")
   public List<Collection> findAll() {
     return collectionRepository.findByOwner(getCurrentUser(), Sort.by(Sort.Direction.ASC, "id"));
   }
 
-  @Cacheable(value = "collections", key = "'user:' + getCurrentUserEmail() + ':id:' + #id")
+  @Cacheable(
+      value = "collections",
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':id:' + #id")
   public Optional<Collection> findById(Long id) {
     return collectionRepository.findByIdAndOwner(id, getCurrentUser());
   }
@@ -51,7 +57,10 @@ public class CollectionService extends BaseUserAwareService {
     return collectionRepository.existsByNameIgnoreCaseAndOwner(name, getCurrentUser());
   }
 
-  @Cacheable(value = "collections", key = "'user:' + getCurrentUserEmail() + ':name:' + #name")
+  @Cacheable(
+      value = "collections",
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':name:' + #name")
   public Optional<Collection> findByName(String name) {
     return collectionRepository.findByNameIgnoreCaseAndOwner(name, getCurrentUser());
   }
