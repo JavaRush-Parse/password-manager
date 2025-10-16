@@ -6,29 +6,55 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import ua.com.javarush.parse.m5.passwordmanager.entity.Collection;
+import ua.com.javarush.parse.m5.passwordmanager.entity.User;
 import ua.com.javarush.parse.m5.passwordmanager.repository.CollectionRepository;
+import ua.com.javarush.parse.m5.passwordmanager.repository.user.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CollectionService Tests")
 class CollectionServiceTest {
 
   @Mock private CollectionRepository collectionRepository;
+  @Mock private UserRepository userRepository;
+  @Mock private SecurityContext securityContext;
 
-  @InjectMocks private CollectionService collectionService;
+  private CollectionService collectionService;
+  private User testUser;
+
+  @BeforeEach
+  void setUp() {
+    testUser = new User();
+    testUser.setId(1L);
+    testUser.setEmail("test@example.com");
+
+    collectionService = new CollectionService(userRepository, collectionRepository);
+
+    // Setup security context
+    SecurityContextHolder.setContext(securityContext);
+    UsernamePasswordAuthenticationToken authentication =
+        new UsernamePasswordAuthenticationToken(
+            "test@example.com", "password", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+    when(securityContext.getAuthentication()).thenReturn(authentication);
+    when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+  }
 
   @Test
   @DisplayName("Find all collections")
   void findAll_shouldReturnAllCollections() {
     // Given
-    when(collectionRepository.findAll(any(Sort.class)))
+    when(collectionRepository.findByOwner(eq(testUser), any(Sort.class)))
         .thenReturn(List.of(new Collection(), new Collection()));
 
     // When
@@ -36,7 +62,7 @@ class CollectionServiceTest {
 
     // Then
     assertThat(result).hasSize(2);
-    verify(collectionRepository).findAll(any(Sort.class));
+    verify(collectionRepository).findByOwner(eq(testUser), any(Sort.class));
   }
 
   @Test
@@ -44,14 +70,14 @@ class CollectionServiceTest {
   void findById_shouldReturnCollection() {
     // Given
     Collection collection = new Collection();
-    when(collectionRepository.findById(1L)).thenReturn(Optional.of(collection));
+    when(collectionRepository.findByIdAndOwner(1L, testUser)).thenReturn(Optional.of(collection));
 
     // When
     Optional<Collection> result = collectionService.findById(1L);
 
     // Then
     assertThat(result).isPresent();
-    verify(collectionRepository).findById(1L);
+    verify(collectionRepository).findByIdAndOwner(1L, testUser);
   }
 
   @Test
@@ -66,6 +92,7 @@ class CollectionServiceTest {
 
     // Then
     assertThat(saved).isNotNull();
+    assertThat(saved.getOwner()).isEqualTo(testUser);
     verify(collectionRepository).save(collection);
   }
 
@@ -73,12 +100,15 @@ class CollectionServiceTest {
   @DisplayName("Delete collection by ID")
   void deleteById_shouldDeleteCollection() {
     // Given
+    Collection collection = new Collection();
+    when(collectionRepository.findByIdAndOwner(1L, testUser)).thenReturn(Optional.of(collection));
     doNothing().when(collectionRepository).deleteById(1L);
 
     // When
     collectionService.deleteById(1L);
 
     // Then
+    verify(collectionRepository).findByIdAndOwner(1L, testUser);
     verify(collectionRepository).deleteById(1L);
   }
 
@@ -86,14 +116,15 @@ class CollectionServiceTest {
   @DisplayName("Check if collection exists by name")
   void existsByName_shouldReturnTrueIfExisits() {
     // Given
-    when(collectionRepository.existsByNameIgnoreCase("Test Collection")).thenReturn(true);
+    when(collectionRepository.existsByNameIgnoreCaseAndOwner("Test Collection", testUser))
+        .thenReturn(true);
 
     // When
     boolean result = collectionService.existsByName("Test Collection");
 
     // Then
     assertThat(result).isTrue();
-    verify(collectionRepository).existsByNameIgnoreCase("Test Collection");
+    verify(collectionRepository).existsByNameIgnoreCaseAndOwner("Test Collection", testUser);
   }
 
   @Test
@@ -101,7 +132,7 @@ class CollectionServiceTest {
   void findByName_shouldReturnCollection() {
     // Given
     Collection collection = new Collection();
-    when(collectionRepository.findByNameIgnoreCase("Test Collection"))
+    when(collectionRepository.findByNameIgnoreCaseAndOwner("Test Collection", testUser))
         .thenReturn(Optional.of(collection));
 
     // When
@@ -109,7 +140,7 @@ class CollectionServiceTest {
 
     // Then
     assertThat(result).isPresent();
-    verify(collectionRepository).findByNameIgnoreCase("Test Collection");
+    verify(collectionRepository).findByNameIgnoreCaseAndOwner("Test Collection", testUser);
   }
 
   @Test
@@ -123,7 +154,8 @@ class CollectionServiceTest {
     Collection updatedData = new Collection();
     updatedData.setName("New Name");
 
-    when(collectionRepository.findById(1L)).thenReturn(Optional.of(existingCollection));
+    when(collectionRepository.findByIdAndOwner(1L, testUser))
+        .thenReturn(Optional.of(existingCollection));
     when(collectionRepository.save(any(Collection.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -133,7 +165,7 @@ class CollectionServiceTest {
     // Then
     assertThat(result).isPresent();
     assertThat(result.get().getName()).isEqualTo("New Name");
-    verify(collectionRepository).findById(1L);
+    verify(collectionRepository).findByIdAndOwner(1L, testUser);
     verify(collectionRepository).save(existingCollection);
   }
 }

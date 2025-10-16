@@ -3,24 +3,27 @@ package ua.com.javarush.parse.m5.passwordmanager.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultAudit;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.repository.VaultAuditRepository;
+import ua.com.javarush.parse.m5.passwordmanager.repository.user.UserRepository;
 
 @Service
-@RequiredArgsConstructor
-public class VaultAuditService {
+public class VaultAuditService extends BaseUserAwareService {
 
   private final VaultAuditRepository vaultAuditRepository;
 
+  public VaultAuditService(
+      UserRepository userRepository, VaultAuditRepository vaultAuditRepository) {
+    super(userRepository);
+    this.vaultAuditRepository = vaultAuditRepository;
+  }
+
   @Transactional
   public void logCreate(VaultItem vaultItem) {
-    String currentUser = getCurrentUser();
+    String currentUser = getCurrentUserEmailForAudit();
 
     VaultAudit audit =
         VaultAudit.builder()
@@ -38,7 +41,7 @@ public class VaultAuditService {
 
   @Transactional
   public void logUpdate(VaultItem oldItem, VaultItem newItem) {
-    String currentUser = getCurrentUser();
+    String currentUser = getCurrentUserEmailForAudit();
 
     if (!Objects.equals(oldItem.getName(), newItem.getName())) {
       logFieldChange(newItem.getId(), "name", oldItem.getName(), newItem.getName(), currentUser);
@@ -78,7 +81,7 @@ public class VaultAuditService {
 
   @Transactional
   public void logDelete(Long vaultItemId) {
-    String currentUser = getCurrentUser();
+    String currentUser = getCurrentUserEmailForAudit();
 
     VaultAudit audit =
         VaultAudit.builder()
@@ -120,9 +123,12 @@ public class VaultAuditService {
     vaultAuditRepository.save(audit);
   }
 
-  private String getCurrentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication != null ? authentication.getName() : "system";
+  private String getCurrentUserEmailForAudit() {
+    try {
+      return super.getCurrentUser().getEmail();
+    } catch (Exception e) {
+      return "system";
+    }
   }
 
   private String buildItemSnapshot(VaultItem item) {
