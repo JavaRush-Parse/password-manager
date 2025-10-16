@@ -3,10 +3,14 @@ package ua.com.javarush.parse.m5.passwordmanager.service;
 import java.util.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import ua.com.javarush.parse.m5.passwordmanager.dto.PageResponse;
 import ua.com.javarush.parse.m5.passwordmanager.entity.User;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItemIdentifier;
@@ -194,5 +198,36 @@ public class VaultItemService extends BaseUserAwareService {
       return vaultItemRepository.findAllByOwner(currentUser, Sort.by(Sort.Direction.ASC, "id"));
     }
     return vaultItemRepository.searchByNameResourceOrLoginAndOwner(searchTerm, currentUser);
+  }
+
+  @Transactional(readOnly = true)
+  @Cacheable(
+      value = "vault-items",
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':page:' + #page + ':size:' + #size")
+  public PageResponse<VaultItem> findAllPaginated(int page, int size) {
+    User currentUser = getCurrentUser();
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+    Page<VaultItem> vaultItemPage = vaultItemRepository.findAllByOwner(currentUser, pageable);
+    return PageResponse.of(vaultItemPage);
+  }
+
+  @Transactional(readOnly = true)
+  @Cacheable(
+      value = "vault-items",
+      key =
+          "'user:' + T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name + ':search:' + #searchTerm + ':page:' + #page + ':size:' + #size")
+  public PageResponse<VaultItem> searchPaginated(String searchTerm, int page, int size) {
+    User currentUser = getCurrentUser();
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+    Page<VaultItem> vaultItemPage;
+    if (searchTerm == null || searchTerm.isBlank()) {
+      vaultItemPage = vaultItemRepository.findAllByOwner(currentUser, pageable);
+    } else {
+      vaultItemPage =
+          vaultItemRepository.searchByNameResourceOrLoginAndOwner(
+              searchTerm, currentUser, pageable);
+    }
+    return PageResponse.of(vaultItemPage);
   }
 }

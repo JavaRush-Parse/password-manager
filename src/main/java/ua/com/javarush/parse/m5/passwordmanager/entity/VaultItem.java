@@ -3,6 +3,7 @@ package ua.com.javarush.parse.m5.passwordmanager.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 import lombok.*;
 import org.hibernate.annotations.SoftDelete;
@@ -15,7 +16,7 @@ import org.hibernate.annotations.SoftDelete;
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class VaultItem {
+public class VaultItem implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;

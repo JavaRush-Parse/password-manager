@@ -2,6 +2,8 @@ package ua.com.javarush.parse.m5.passwordmanager.repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,6 +32,16 @@ public interface VaultItemRepository extends JpaRepository<VaultItem, Long> {
           + "LOWER(v.login) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
   List<VaultItem> searchByNameResourceOrLoginAndOwner(
       @Param("searchTerm") String searchTerm, @Param("owner") User owner);
+
+  Page<VaultItem> findAllByOwner(User owner, Pageable pageable);
+
+  @Query(
+      "SELECT v FROM VaultItem v WHERE v.owner = :owner AND ("
+          + "LOWER(v.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR "
+          + "LOWER(v.resource) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR "
+          + "LOWER(v.login) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+  Page<VaultItem> searchByNameResourceOrLoginAndOwner(
+      @Param("searchTerm") String searchTerm, @Param("owner") User owner, Pageable pageable);
 
   // Legacy methods - kept for backward compatibility but should be avoided
   @Deprecated

@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ua.com.javarush.parse.m5.passwordmanager.dto.PageResponse;
 import ua.com.javarush.parse.m5.passwordmanager.entity.VaultItem;
 import ua.com.javarush.parse.m5.passwordmanager.service.VaultItemService;
 
@@ -29,20 +30,33 @@ public class VaultPageController {
 
   @HxRequest
   @GetMapping("/table")
-  public String vaultTable(Model model) {
-    List<VaultItem> vaultItems = vaultItemService.findAll();
-    model.addAttribute("vaultItems", vaultItems);
+  public String vaultTable(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      Model model) {
+    PageResponse<VaultItem> pageResponse = vaultItemService.findAllPaginated(page, size);
+    model.addAttribute("vaultItems", pageResponse.getContent());
+    model.addAttribute("currentPage", pageResponse.getCurrentPage());
+    model.addAttribute("totalPages", pageResponse.getTotalPages());
+    model.addAttribute("totalItems", pageResponse.getTotalElements());
+    model.addAttribute("pageSize", pageResponse.getPageSize());
     return "component/vault-table :: vaultTable";
   }
 
   @HxRequest
   @GetMapping("/table-search")
-  public String search(@RequestParam(required = false) String query, Model model) {
-    if (query == null || query.isEmpty()) {
-      return vaultTable(model);
-    }
-    List<VaultItem> vaultItems = vaultItemService.search(query);
-    model.addAttribute("vaultItems", vaultItems);
+  public String search(
+      @RequestParam(required = false) String query,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      Model model) {
+    PageResponse<VaultItem> pageResponse = vaultItemService.searchPaginated(query, page, size);
+    model.addAttribute("vaultItems", pageResponse.getContent());
+    model.addAttribute("currentPage", pageResponse.getCurrentPage());
+    model.addAttribute("totalPages", pageResponse.getTotalPages());
+    model.addAttribute("totalItems", pageResponse.getTotalElements());
+    model.addAttribute("pageSize", pageResponse.getPageSize());
+    model.addAttribute("query", query != null ? query : "");
     return "component/vault-table :: vaultTable";
   }
 }
